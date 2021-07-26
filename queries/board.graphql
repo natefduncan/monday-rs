@@ -1,0 +1,9 @@
+query BoardView($board_id : [Int]) {
+    boards(ids:$board_id) {
+        columns {
+        archived
+        id 
+        title
+        }
+    }
+}
