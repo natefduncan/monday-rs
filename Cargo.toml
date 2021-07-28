@@ -1,5 +1,5 @@
 [package]
-name = "monday-rs"
+name = "monday"
 version = "0.1.0"
 authors = ["Nathan Duncan <natefduncan@gmail.com>"]
 edition = "2018"
@@ -8,7 +8,9 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.42"
+argh = "0.1.5"
 clap = "2.33.3"
+crossterm = "0.20.0"
 graphql_client = { version = "0.10.0", features = ["reqwest-blocking"] }
 reqwest = { version = "0.11.4", features = ["json","blocking"] }
 serde = "1.0.126"
