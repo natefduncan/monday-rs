@@ -48,7 +48,9 @@ impl From<MenuItem> for usize {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    //Fetch boards
     let client = monday::get_client().expect("Could not get client.");
+    let board_vec : Vec<objects::Board> = queries::board_list(&client); 
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -145,7 +147,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let (left, right) = render_boards(&client, &board_list_state);
+                    let (left, right) = render_boards(&board_vec, &board_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
@@ -164,7 +166,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 KeyCode::Char('b') => active_menu_item = MenuItem::Boards,
                 KeyCode::Down => {
                     if let Some(selected) = board_list_state.selected() {
-                        let amount_boards = 10; 
+                        let amount_boards = board_vec.len(); 
                         if selected >= amount_boards - 1 {
                             board_list_state.select(Some(0));
                         } else {
@@ -174,7 +176,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 KeyCode::Up => {
                     if let Some(selected) = board_list_state.selected() {
-                        let amount_boards = 10; 
+                        let amount_boards = board_vec.len(); 
                         if selected > 0 {
                             board_list_state.select(Some(selected - 1));
                         } else {
@@ -216,14 +218,13 @@ fn render_home<'a>() -> Paragraph<'a> {
     home
 }
 
-fn render_boards<'a>(client : &Client, board_list_state : &ListState) -> (List<'a>, Table<'a>) {
+fn render_boards<'a>(board_vec : &Vec<objects::Board>, board_list_state : &ListState) -> (List<'a>, Table<'a>) {
     let board_block = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
         .title("Boards")
         .border_type(BorderType::Plain);
 
-    let board_vec : Vec<objects::Board> = queries::board_list(&client); 
     let list_items : Vec<ListItem> = board_vec.iter().map(|x| ListItem::new(x.name.to_owned())).collect();
     let selected_board = board_vec
         .get(
