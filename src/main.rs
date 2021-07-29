@@ -24,28 +24,12 @@ mod monday;
 mod objects;
 mod queries;
 mod views;
+mod utils; 
 
 //Event loop enum
 enum Event<I> {
     Input(I),
     Tick,
-}
-
-fn search_boards(query: String, boards: &Vec<objects::Board>, n: usize) -> Vec<objects::Board> {
-    let mut output: Vec<objects::Board> = Vec::new();
-    let query_lower: String = query.to_lowercase();
-
-    for board in boards.clone() {
-        if board
-            .name
-            .to_lowercase()
-            .split_whitespace()
-            .any(|x| x.contains(&query_lower))
-        {
-            output.push(board.clone());
-        }
-    }
-    return output;
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -155,7 +139,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     if search.len() > 0 {
                         let search_string: String =
                             search.iter().map(|c| c.to_string()).collect::<String>();
-                        board_temp = search_boards(search_string, &mut board_vec, 5);
+                        board_temp = utils::search_boards(search_string, &mut board_vec);
                     } else {
                         board_temp = board_vec.clone();
                     }
