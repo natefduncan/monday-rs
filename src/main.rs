@@ -11,7 +11,7 @@ use tui::{
 };
 
 use crossterm::{
-    event::{self, EnableMouseCapture, Event as CEvent, KeyCode},
+    event::{self, Event as CEvent, KeyCode, KeyModifiers},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen},
 };
@@ -19,7 +19,7 @@ use crossterm::{
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
-use reqwest::blocking::Client;
+use rust_fuzzy_search::fuzzy_search_sorted;
 
 mod monday; 
 mod objects; 
@@ -47,14 +47,28 @@ impl From<MenuItem> for usize {
     }
 }
 
+fn fuzzy_search_boards(query : String, boards : &mut Vec<objects::Board>, n : usize) -> Vec<objects::Board> {
+    let board_clone = &boards.iter().map(|board| board.name.as_ref()).collect::<Vec<&str>>(); 
+    let res : Vec<(&str, f32)> = fuzzy_search_sorted(&query, board_clone);
+    let mut top_keys : Vec<&str> = res.iter().map(|(word, _)| word.as_ref()).collect::<Vec<&str>>();
+    top_keys.truncate(n);  
+    let mut output : Vec<objects::Board> = Vec::new(); 
+    for board in boards.clone() {
+        if top_keys.contains(&&*board.name) {
+            output.push(board.clone()); 
+        }
+    }
+    return output; 
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Fetch boards
     let client = monday::get_client().expect("Could not get client.");
-    let board_vec : Vec<objects::Board> = queries::board_list(&client); 
+    let mut board_vec : Vec<objects::Board> = queries::board_list(&client); 
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
@@ -83,6 +97,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let menu_titles = vec!["Home", "Boards", "Quit"];
     let mut active_menu_item = MenuItem::Boards;
     let mut board_list_state = ListState::default();
+    let mut search : Vec<char> = Vec::new(); 
+
     board_list_state.select(Some(0));
 
     terminal.clear()?; 
@@ -103,14 +119,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .split(size);
 
-            let copyright = Paragraph::new("Monday-CLI 2021 - all rights reserved")
+            let search_text : String = search.iter().map(|x| x.to_string()).collect::<String>(); 
+            let search_block = Paragraph::new(search_text)
                 .style(Style::default().fg(Color::LightCyan))
                 .alignment(Alignment::Center)
                 .block(
                     Block::default()
                         .borders(Borders::ALL)
                         .style(Style::default().fg(Color::White))
-                        .title("Copyright")
+                        .title("Search")
                         .border_type(BorderType::Plain),
                 );
 
@@ -144,47 +161,69 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let board_chunks = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints(
-                            [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
+                            [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let (left, right) = render_boards(&board_vec, &board_list_state);
+                    let board_temp : Vec<objects::Board>; 
+                    if search.len()>0 {
+                        let search_string : String = search.iter().map(|c| c.to_string()).collect::<String>(); 
+                        board_temp = fuzzy_search_boards(search_string, &mut board_vec, 5); 
+                    } else {
+                        board_temp = board_vec.clone(); 
+                    }
+                    let (left, right) = render_boards(&board_temp, &board_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
             }
-            rect.render_widget(copyright, chunks[2]);
+            rect.render_widget(search_block, chunks[2]);
         })?;
 
         match rx.recv()? {
-            Event::Input(event) => match event.code {
-                KeyCode::Char('q') => {
-                    disable_raw_mode()?;
-                    terminal.show_cursor()?;
-                    break;
-                }
-                KeyCode::Char('h') => active_menu_item = MenuItem::Home,
-                KeyCode::Char('b') => active_menu_item = MenuItem::Boards,
-                KeyCode::Down => {
-                    if let Some(selected) = board_list_state.selected() {
-                        let amount_boards = board_vec.len(); 
-                        if selected >= amount_boards - 1 {
-                            board_list_state.select(Some(0));
-                        } else {
-                            board_list_state.select(Some(selected + 1));
+            Event::Input(event) => match event.modifiers {
+                KeyModifiers::SHIFT => {
+                    match event.code {
+                        KeyCode::Char('Q') => {
+                            disable_raw_mode()?;
+                            terminal.show_cursor()?;
+                            break;
+                        },
+                        KeyCode::Char('H') => active_menu_item = MenuItem::Home, 
+                        KeyCode::Char('B') => active_menu_item = MenuItem::Boards,
+                        _ => {}
+                    }
+                }, 
+                _ => {
+                    match event.code {
+                        KeyCode::Down => {
+                            if let Some(selected) = board_list_state.selected() {
+                                let amount_boards = board_vec.len(); 
+                                if selected >= amount_boards - 1 {
+                                    board_list_state.select(Some(0));
+                                } else {
+                                    board_list_state.select(Some(selected + 1));
+                                }
+                            }
                         }
+                        KeyCode::Up => {
+                            if let Some(selected) = board_list_state.selected() {
+                                let amount_boards = board_vec.len(); 
+                                if selected > 0 {
+                                    board_list_state.select(Some(selected - 1));
+                                } else {
+                                    board_list_state.select(Some(amount_boards - 1));
+                                }
+                            }
+                        }, 
+                        KeyCode::Backspace => { 
+                            search.pop(); 
+                        }
+                        KeyCode::Char(c) => {
+                            search.push(c); 
+                        }, 
+                        _ => {}
                     }
                 }
-                KeyCode::Up => {
-                    if let Some(selected) = board_list_state.selected() {
-                        let amount_boards = board_vec.len(); 
-                        if selected > 0 {
-                            board_list_state.select(Some(selected - 1));
-                        } else {
-                            board_list_state.select(Some(amount_boards - 1));
-                        }
-                    }
-                }
-                _ => {}
             },
             Event::Tick => {}
         }
@@ -198,14 +237,12 @@ fn render_home<'a>() -> Paragraph<'a> {
         Spans::from(vec![Span::raw("")]),
         Spans::from(vec![Span::raw("Welcome")]),
         Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("to")]),
         Spans::from(vec![Span::raw("")]),
         Spans::from(vec![Span::styled(
             "Monday-CLI",
             Style::default().fg(Color::LightBlue),
         )]),
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Press 'b' to access boards")]),
+      Spans::from(vec![Span::raw("")]),
     ])
     .alignment(Alignment::Center)
     .block(
