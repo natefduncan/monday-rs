@@ -5,7 +5,7 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs,
+        Block, BorderType, Borders, ListState, Paragraph, Tabs,
     },
     Terminal,
 };
@@ -20,9 +20,10 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
 
-mod monday; 
-mod objects; 
-mod queries; 
+mod monday;
+mod objects;
+mod queries;
+mod views;
 
 //Event loop enum
 enum Event<I> {
@@ -30,38 +31,27 @@ enum Event<I> {
     Tick,
 }
 
-//Menu enum
-#[derive(Copy, Clone, Debug)]
-enum MenuItem {
-    Home, 
-    Boards,
-}
-
-impl From<MenuItem> for usize {
-    fn from(input: MenuItem) -> usize {
-        match input {
-            MenuItem::Home => 0,
-            MenuItem::Boards => 1,
-        }
-    }
-}
-
-fn search_boards(query : String, boards : &Vec<objects::Board>, n : usize) -> Vec<objects::Board> {
-    let mut output : Vec<objects::Board> = Vec::new(); 
-    let query_lower : String = query.to_lowercase(); 
+fn search_boards(query: String, boards: &Vec<objects::Board>, n: usize) -> Vec<objects::Board> {
+    let mut output: Vec<objects::Board> = Vec::new();
+    let query_lower: String = query.to_lowercase();
 
     for board in boards.clone() {
-        if board.name.to_lowercase().split_whitespace().any(|x| x.contains(&query_lower)) {
-            output.push(board.clone()); 
+        if board
+            .name
+            .to_lowercase()
+            .split_whitespace()
+            .any(|x| x.contains(&query_lower))
+        {
+            output.push(board.clone());
         }
     }
-    return output; 
+    return output;
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Fetch boards
     let client = monday::get_client().expect("Could not get client.");
-    let mut board_vec : Vec<objects::Board> = queries::board_list(&client); 
+    let mut board_vec: Vec<objects::Board> = queries::board_list(&client);
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -92,13 +82,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let menu_titles = vec!["Home", "Boards", "Quit"];
-    let mut active_menu_item = MenuItem::Boards;
+    let mut active_menu_item = views::MenuItem::Boards;
     let mut board_list_state = ListState::default();
-    let mut search : Vec<char> = Vec::new(); 
+    let mut search: Vec<char> = Vec::new();
 
     board_list_state.select(Some(0));
 
-    terminal.clear()?; 
+    terminal.clear()?;
 
     loop {
         terminal.draw(|rect| {
@@ -116,7 +106,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .split(size);
 
-            let search_text : String = search.iter().map(|x| x.to_string()).collect::<String>(); 
+            let search_text: String = search.iter().map(|x| x.to_string()).collect::<String>();
             let search_block = Paragraph::new(search_text)
                 .style(Style::default().fg(Color::LightCyan))
                 .alignment(Alignment::Center)
@@ -153,22 +143,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             rect.render_widget(tabs, chunks[0]);
             match active_menu_item {
-                MenuItem::Home => rect.render_widget(render_home(), chunks[1]),
-                MenuItem::Boards => {
+                views::MenuItem::Home => rect.render_widget(views::render_home(), chunks[1]),
+                views::MenuItem::Boards => {
                     let board_chunks = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints(
                             [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let board_temp : Vec<objects::Board>; 
-                    if search.len()>0 {
-                        let search_string : String = search.iter().map(|c| c.to_string()).collect::<String>(); 
-                        board_temp = search_boards(search_string, &mut board_vec, 5); 
+                    let board_temp: Vec<objects::Board>;
+                    if search.len() > 0 {
+                        let search_string: String =
+                            search.iter().map(|c| c.to_string()).collect::<String>();
+                        board_temp = search_boards(search_string, &mut board_vec, 5);
                     } else {
-                        board_temp = board_vec.clone(); 
+                        board_temp = board_vec.clone();
                     }
-                    let (left, right) = render_boards(&board_temp, &board_list_state);
+                    let (left, right) = views::render_boards(&board_temp, &board_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
@@ -178,49 +169,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         match rx.recv()? {
             Event::Input(event) => match event.modifiers {
-                KeyModifiers::SHIFT => {
-                    match event.code {
-                        KeyCode::Char('Q') => {
-                            disable_raw_mode()?;
-                            terminal.show_cursor()?;
-                            break;
-                        },
-                        KeyCode::Char('H') => active_menu_item = MenuItem::Home, 
-                        KeyCode::Char('B') => active_menu_item = MenuItem::Boards,
-                        _ => {}
+                KeyModifiers::SHIFT => match event.code {
+                    KeyCode::Char('Q') => {
+                        disable_raw_mode()?;
+                        terminal.show_cursor()?;
+                        break;
                     }
-                }, 
-                _ => {
-                    match event.code {
-                        KeyCode::Down => {
-                            if let Some(selected) = board_list_state.selected() {
-                                let amount_boards = board_vec.len(); 
-                                if selected >= amount_boards - 1 {
-                                    board_list_state.select(Some(0));
-                                } else {
-                                    board_list_state.select(Some(selected + 1));
-                                }
+                    KeyCode::Char('H') => active_menu_item = views::MenuItem::Home,
+                    KeyCode::Char('B') => active_menu_item = views::MenuItem::Boards,
+                    _ => {}
+                },
+                _ => match event.code {
+                    KeyCode::Down => {
+                        if let Some(selected) = board_list_state.selected() {
+                            let amount_boards = board_vec.len();
+                            if selected >= amount_boards - 1 {
+                                board_list_state.select(Some(0));
+                            } else {
+                                board_list_state.select(Some(selected + 1));
                             }
                         }
-                        KeyCode::Up => {
-                            if let Some(selected) = board_list_state.selected() {
-                                let amount_boards = board_vec.len(); 
-                                if selected > 0 {
-                                    board_list_state.select(Some(selected - 1));
-                                } else {
-                                    board_list_state.select(Some(amount_boards - 1));
-                                }
-                            }
-                        }, 
-                        KeyCode::Backspace => { 
-                            search.pop(); 
-                        }
-                        KeyCode::Char(c) => {
-                            search.push(c); 
-                        }, 
-                        _ => {}
                     }
-                }
+                    KeyCode::Up => {
+                        if let Some(selected) = board_list_state.selected() {
+                            let amount_boards = board_vec.len();
+                            if selected > 0 {
+                                board_list_state.select(Some(selected - 1));
+                            } else {
+                                board_list_state.select(Some(amount_boards - 1));
+                            }
+                        }
+                    }
+                    KeyCode::Backspace => {
+                        search.pop();
+                    }
+                    KeyCode::Char(c) => {
+                        search.push(c);
+                    }
+                    _ => {}
+                },
             },
             Event::Tick => {}
         }
@@ -228,80 +215,3 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-
-fn render_home<'a>() -> Paragraph<'a> {
-    let home = Paragraph::new(vec![
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Welcome")]),
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::styled(
-            "Monday-CLI",
-            Style::default().fg(Color::LightBlue),
-        )]),
-      Spans::from(vec![Span::raw("")]),
-    ])
-    .alignment(Alignment::Center)
-    .block(
-        Block::default()
-            .borders(Borders::ALL)
-            .style(Style::default().fg(Color::White))
-            .title("Home")
-            .border_type(BorderType::Plain),
-    );
-    home
-}
-
-fn render_boards<'a>(board_vec : &Vec<objects::Board>, board_list_state : &ListState) -> (List<'a>, Table<'a>) {
-    let board_block = Block::default()
-        .borders(Borders::ALL)
-        .style(Style::default().fg(Color::White))
-        .title("Boards")
-        .border_type(BorderType::Plain);
-
-    let list_items : Vec<ListItem> = board_vec.iter().map(|x| ListItem::new(x.name.to_owned())).collect();
-    let selected_board = board_vec
-        .get(
-            board_list_state
-                .selected()
-                .expect("there is always a selected board"),
-        )
-        .unwrap_or(&objects::Board {name : "".to_owned(), id : "".to_owned()})
-        .clone();
-
-    let board_list = List::new(list_items).block(board_block).highlight_style(
-        Style::default()
-            .bg(Color::Yellow)
-            .fg(Color::Black)
-            .add_modifier(Modifier::BOLD),
-    );
-
-    let board_detail =  Table::new(vec![Row::new(vec![
-        Cell::from(Span::raw(selected_board.id.to_string())),
-        Cell::from(Span::raw(selected_board.name)),
-    ])])
-    .header(Row::new(vec![
-        Cell::from(Span::styled(
-            "ID",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Name",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-    ]))
-    .block(
-        Block::default()
-            .borders(Borders::ALL)
-            .style(Style::default().fg(Color::White))
-            .title("Detail")
-            .border_type(BorderType::Plain),
-    )
-    .widths(&[
-        Constraint::Percentage(50),
-        Constraint::Percentage(50),
-    ]);
-
-    (board_list, board_detail)
-}
-

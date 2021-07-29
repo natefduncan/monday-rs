@@ -1,66 +1,66 @@
 #[derive(Debug, Clone)]
 pub struct ActivityLogType {
-    account_id : String, 
-    created_at : String, 
-    data : String, 
-    entity : String, 
-    event : String, 
-    id : String, 
-    user_id : String
+    account_id: String,
+    created_at: String,
+    data: String,
+    entity: String,
+    event: String,
+    id: String,
+    user_id: String,
 }
 
 #[derive(Debug, Copy, Clone)]
 pub enum BoardKind {
-    Public, 
-    Private, 
-    Share
+    Public,
+    Private,
+    Share,
 }
 
 #[derive(Debug, Clone)]
 pub struct Column {
-    archived : bool, 
-    id : String, 
+    archived: bool,
+    id: String,
     pos: String,
-    settings_str : String, 
-    title : String, 
-    width : u32
-} 
+    settings_str: String,
+    title: String,
+    width: u32,
+}
 
 #[derive(Debug, Clone)]
 pub struct Group {
-    archived : bool, 
-    color : String, 
-    deleted : bool, 
-    id : String, 
-    items : Vec<Item>, 
-    position : String, 
-    title : String
+    archived: bool,
+    color: String,
+    deleted: bool,
+    id: String,
+    items: Vec<Item>,
+    position: String,
+    title: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Item {
-    assets : Vec<Asset>, 
-    board : Board, 
-    column_values : Vec<ColumnValue>, 
-    created_at : Date, 
-    creator : User, 
-    creator_id : String, 
-    group : Group, 
-    id : String, 
-    name : String, 
-    state : State, 
-    subscribers : Vec<User>, 
-    updated_at : Date, 
-    updates : Vec<Update>
+    assets: Vec<Asset>,
+    board: Board,
+    column_values: Vec<ColumnValue>,
+    created_at: Date,
+    creator: User,
+    creator_id: String,
+    group: Group,
+    id: String,
+    name: String,
+    state: State,
+    subscribers: Vec<User>,
+    updated_at: Date,
+    updates: Vec<Update>,
 }
 
 #[derive(Debug, Clone)]
 pub struct ColumnValue {
-    additional_info : JSON, 
-    id : String, 
-    text : String, 
-    title : String, 
-    value : JSON
+    additional_info: JSON,
+    id: String,
+    text: String,
+    title: String,
+    value: JSON,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -71,88 +71,96 @@ pub struct JSON {}
 
 #[derive(Debug, Clone)]
 pub struct Asset {
-    created_at : Date, 
-    file_extension : String, 
-    file_size : u32, 
-    id : String, 
-    name : String, 
-    original_geometry : String, 
-    public_url : String, 
-    uploaded_by : User,
-    url : String, 
-    url_thumbnail : String 
+    created_at: Date,
+    file_extension: String,
+    file_size: u32,
+    id: String,
+    name: String,
+    original_geometry: String,
+    public_url: String,
+    uploaded_by: User,
+    url: String,
+    url_thumbnail: String,
 }
 
 #[derive(Debug, Copy, Clone)]
-pub enum FirstDayOfTheWeek { Sunday, Monday} 
+pub enum FirstDayOfTheWeek {
+    Sunday,
+    Monday,
+}
 
 #[derive(Debug, Clone)]
 pub struct Account {
-    first_day_of_the_week : FirstDayOfTheWeek, 
-    id : u32, 
-    logo : String, 
-    name : String, 
-    plan : Plan, 
-    show_timeline_weekends : bool, 
-    slug : String, 
-    tier : String
+    first_day_of_the_week: FirstDayOfTheWeek,
+    id: u32,
+    logo: String,
+    name: String,
+    plan: Plan,
+    show_timeline_weekends: bool,
+    slug: String,
+    tier: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Plan {
-    max_users : u32, 
-    period : String, 
-    tier : String, 
-    version : u32
+    max_users: u32,
+    period: String,
+    tier: String,
+    version: u32,
 }
 
 #[derive(Debug, Clone)]
 pub struct User {
-    account : Account, 
-    birthday : Date, 
-    country_code : String, 
-    created_at : Date, 
-    email : String, 
-    enabled : bool, 
-    id : u32, 
-    is_admin : bool, 
-    is_guest : bool, 
-    is_pending : bool, 
-    is_verified : bool, 
-    is_view_only : bool, 
-    join_date : Date, 
-    location : String, 
-    mobile_phone : String, 
-    name : String, 
-    phone : String, 
-    photo_original : String, 
-    photo_small : String, 
-    photo_thumb : String, 
-    photo_thumb_small : String, 
-    photo_tiny : String, 
-    teams : Vec<Team>, 
-    time_zome_identifier : String, 
-    title : String, 
-    url : String, 
-    utc_hours_diff : String
+    account: Account,
+    birthday: Date,
+    country_code: String,
+    created_at: Date,
+    email: String,
+    enabled: bool,
+    id: u32,
+    is_admin: bool,
+    is_guest: bool,
+    is_pending: bool,
+    is_verified: bool,
+    is_view_only: bool,
+    join_date: Date,
+    location: String,
+    mobile_phone: String,
+    name: String,
+    phone: String,
+    photo_original: String,
+    photo_small: String,
+    photo_thumb: String,
+    photo_thumb_small: String,
+    photo_tiny: String,
+    teams: Vec<Team>,
+    time_zome_identifier: String,
+    title: String,
+    url: String,
+    utc_hours_diff: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Team {
-    id : u32, 
-    name : String, 
-    picture_url : String, 
-    users : Vec<User>
+    id: u32,
+    name: String,
+    picture_url: String,
+    users: Vec<User>,
 }
 
 #[derive(Debug, Copy, Clone)]
-pub enum State {All, Active, Archived, Deleted}
+pub enum State {
+    All,
+    Active,
+    Archived,
+    Deleted,
+}
 
 #[derive(Debug, Clone)]
 pub struct Tag {
-    color : String, 
-    id : u32, 
-    name : String
+    color: String,
+    id: u32,
+    name: String,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -160,69 +168,72 @@ pub struct ISO8601DateTime {}
 
 #[derive(Debug, Clone)]
 pub struct Update {
-    assets : Vec<Asset>, 
-    body : String, 
-    created_at : Date, 
-    creator : User, 
-    creator_id : String, 
-    id : String, 
-    item_id : String, 
-    replies : Vec<Reply>, 
-    text_body : String, 
-    updated_at : Date
+    assets: Vec<Asset>,
+    body: String,
+    created_at: Date,
+    creator: User,
+    creator_id: String,
+    id: String,
+    item_id: String,
+    replies: Vec<Reply>,
+    text_body: String,
+    updated_at: Date,
 }
 
 #[derive(Debug, Clone)]
 pub struct Reply {
-    body : String, 
-    created_at : Date, 
-    creator : User, 
-    creator_id : String, 
-    id : String, 
-    text_body : String, 
-    updated_at : Date
+    body: String,
+    created_at: Date,
+    creator: User,
+    creator_id: String,
+    id: String,
+    text_body: String,
+    updated_at: Date,
 }
 
 #[derive(Debug, Clone)]
 pub struct BoardView {
-    id : String, 
-    name : String, 
-    settings_str : String, 
+    id: String,
+    name: String,
+    settings_str: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Workspace {
-    description : String, 
-    id : u32, 
-    kind : WorkspaceKind, 
-    name : String
+    description: String,
+    id: u32,
+    kind: WorkspaceKind,
+    name: String,
 }
 
 #[derive(Debug, Copy, Clone)]
-pub enum WorkspaceKind { Open, Closed }
+pub enum WorkspaceKind {
+    Open,
+    Closed,
+}
 
 #[derive(Debug, Clone)]
 pub struct Board {
-    // activity_logs : Vec<ActivityLogType> 
-    // board_folder_id : u32, 
-    // board_kind : BoardKind, 
-    // columns : Vec<Column>, 
-    // communication : JSON, 
-    // description : String, 
-    // groups : Vec<Group>, 
-    pub id : String, 
+    // activity_logs : Vec<ActivityLogType>
+    // board_folder_id : u32,
+    // board_kind : BoardKind,
+    // columns : Vec<Column>,
+    // communication : JSON,
+    // description : String,
+    // groups : Vec<Group>,
+    pub id: String,
     // items : Vec<Item>,
-    pub name : String, 
+    pub name: String,
     // owner : User,
-    // permissions : String, 
-    // pos : String, 
-    // state : State, 
-    // subscribers : Vec<User>, 
+    // permissions : String,
+    // pos : String,
+    // state : State,
+    // subscribers : Vec<User>,
     // tags : Vec<Tag>
-    // top_group : Group, 
-    // updated_at : ISO8601DateTime; 
+    // top_group : Group,
+    // updated_at : ISO8601DateTime;
     // updates : Vec<Update>
     // views : Vec<BoardView>
-    // workspace : Workspace, 
+    // workspace : Workspace,
     // workspace_id : u32
 }
