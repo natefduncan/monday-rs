@@ -19,7 +19,6 @@ use crossterm::{
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
-use rust_fuzzy_search::fuzzy_search_sorted;
 
 mod monday; 
 mod objects; 
@@ -47,14 +46,12 @@ impl From<MenuItem> for usize {
     }
 }
 
-fn fuzzy_search_boards(query : String, boards : &mut Vec<objects::Board>, n : usize) -> Vec<objects::Board> {
-    let board_clone = &boards.iter().map(|board| board.name.as_ref()).collect::<Vec<&str>>(); 
-    let res : Vec<(&str, f32)> = fuzzy_search_sorted(&query, board_clone);
-    let mut top_keys : Vec<&str> = res.iter().map(|(word, _)| word.as_ref()).collect::<Vec<&str>>();
-    top_keys.truncate(n);  
+fn search_boards(query : String, boards : &Vec<objects::Board>, n : usize) -> Vec<objects::Board> {
     let mut output : Vec<objects::Board> = Vec::new(); 
+    let query_lower : String = query.to_lowercase(); 
+
     for board in boards.clone() {
-        if top_keys.contains(&&*board.name) {
+        if board.name.to_lowercase().split_whitespace().any(|x| x.contains(&query_lower)) {
             output.push(board.clone()); 
         }
     }
@@ -167,7 +164,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let board_temp : Vec<objects::Board>; 
                     if search.len()>0 {
                         let search_string : String = search.iter().map(|c| c.to_string()).collect::<String>(); 
-                        board_temp = fuzzy_search_boards(search_string, &mut board_vec, 5); 
+                        board_temp = search_boards(search_string, &mut board_vec, 5); 
                     } else {
                         board_temp = board_vec.clone(); 
                     }
@@ -269,7 +266,7 @@ fn render_boards<'a>(board_vec : &Vec<objects::Board>, board_list_state : &ListS
                 .selected()
                 .expect("there is always a selected board"),
         )
-        .expect("exists")
+        .unwrap_or(&objects::Board {name : "".to_owned(), id : "".to_owned()})
         .clone();
 
     let board_list = List::new(list_items).block(board_block).highlight_style(
