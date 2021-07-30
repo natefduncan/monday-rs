@@ -28,10 +28,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Menu 
     let menu_titles = vec!["Home", "Boards", "Quit"];
     let mut active_menu_item = views::MenuItem::Boards;
-    let mut board_list_state = ListState::default();
-    board_list_state.select(Some(0));
-    let mut group_list_state = ListState::default();
-    group_list_state.select(Some(0)); 
+    let mut list_state = ListState::default();
+    list_state.select(Some(0));
     //Search 
     let mut search : Vec<char> = Vec::new(); 
     //Monday Data
@@ -101,8 +99,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         )
                         .split(chunks[1]);
                     let board_filtered = utils::filter_boards(&boards, &search); 
-                    let (left, right) = views::BoardList::render(&board_filtered, &board_list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
+                    let (left, right) = views::BoardList::render(&board_filtered, &list_state);
+                    rect.render_stateful_widget(left, board_chunks[0], &mut list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }, 
                 views::MenuItem::Detail => {
@@ -112,16 +110,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                     )
                     .split(chunks[1]);
-                    // let board_temp: Vec<objects::Board>;
-                    // if search.len() > 0 {
-                    //     let search_string: String =
-                    //         search.iter().map(|c| c.to_string()).collect::<String>();
-                    //     board_temp = utils::search_boards(search_string, &mut boards);
-                    // } else {
-                    //     board_temp = boards.clone();
-                    // }
-                    let (left, right) = views::BoardDetail::render(&groups, &group_list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
+                    let (left, right) = views::BoardDetail::render(&groups, &list_state);
+                    rect.render_stateful_widget(left, board_chunks[0], &mut list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
             }
@@ -141,22 +131,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 },
                 _ => match event.code {
                     KeyCode::Down => {
-                        if let Some(selected) = board_list_state.selected() {
+                        if let Some(selected) = list_state.selected() {
                             let amount_boards = boards.len();
                             if selected >= amount_boards - 1 {
-                                board_list_state.select(Some(0));
+                                list_state.select(Some(0));
                             } else {
-                                board_list_state.select(Some(selected + 1));
+                                list_state.select(Some(selected + 1));
                             }
                         }
                     }
                     KeyCode::Up => {
-                        if let Some(selected) = board_list_state.selected() {
+                        if let Some(selected) = list_state.selected() {
                             let amount_boards = boards.len();
                             if selected > 0 {
-                                board_list_state.select(Some(selected - 1));
+                                list_state.select(Some(selected - 1)); 
                             } else {
-                                board_list_state.select(Some(amount_boards - 1));
+                                list_state.select(Some(amount_boards - 1));
                             }
                         }
                     }
@@ -166,12 +156,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     KeyCode::Enter => { 
                         let board_filtered = utils::filter_boards(&boards, &search); 
                         active_menu_item = views::MenuItem::Detail; 
-                        let selected_board = board_filtered.get(board_list_state.selected().unwrap()).unwrap().clone(); 
-                        groups = queries::board_detail(&client, selected_board.id)
+                        let selected_board = board_filtered.get(list_state.selected().unwrap()).unwrap().clone(); 
+                        groups = queries::board_detail(&client, selected_board.id); 
+                        search = Vec::new(); 
                     }
                     KeyCode::Char(c) => {
                         search.push(c);
-                        board_list_state.select(Some(0)); 
+                        list_state.select(Some(0)); 
                     }
                     _ => {}
                 },
