@@ -50,9 +50,9 @@ fn parse_board_list_response(res : Response<board_list::ResponseData>) -> Vec<Bo
 )]
 struct BoardDetail;
 
-pub fn board_detail(client: &Client, board_id : u32) -> Vec<Group> {
+pub fn board_detail(client: &Client, board_id : String) -> Vec<Group> {
     let variables = board_detail::Variables {
-        board_id : Some(board_id as i64), 
+        board_id : Some(board_id.parse::<i64>().expect("can convert to i64")), 
         group_item_limit : Some(100)
     };
     let res: Response<board_detail::ResponseData> =
