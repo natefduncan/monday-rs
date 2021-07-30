@@ -1,84 +1,43 @@
-use std::io;
 use tui::{
-    backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
         Block, BorderType, Borders, ListState, Paragraph, Tabs,
     },
-    Terminal,
 };
 
 use crossterm::{
-    event::{self, Event as CEvent, KeyCode, KeyModifiers},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen},
+    event::{KeyCode, KeyModifiers},
 };
-
-use std::sync::mpsc;
-use std::thread;
-use std::time::{Duration, Instant};
 
 mod monday;
 mod objects;
 mod queries;
 mod views;
 mod utils; 
+mod events;
+mod app;
 
-//Event loop enum
-enum Event<I> {
-    Input(I),
-    Tick,
-}
-
-fn main() {
-    let board_id = 1393475156; 
-    let client = monday::get_client().expect("Could not get client.");
-    println!("{:#?}", queries::board_detail(&client, board_id));
-}
-
-fn main2() -> Result<(), Box<dyn std::error::Error>> {
-    //Fetch boards
-    let client = monday::get_client().expect("Could not get client.");
-    let mut board_vec: Vec<objects::Board> = queries::board_list(&client);
-
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen)?;
-    let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
-
-    // Setup input handling
-    let (tx, rx) = mpsc::channel();
-    let tick_rate = Duration::from_millis(200);
-    thread::spawn(move || {
-        let mut last_tick = Instant::now();
-        loop {
-            // poll for tick rate duration, if no events, sent tick event.
-            let timeout = tick_rate
-                .checked_sub(last_tick.elapsed())
-                .unwrap_or_else(|| Duration::from_secs(0));
-            if event::poll(timeout).unwrap() {
-                if let CEvent::Key(key) = event::read().unwrap() {
-                    tx.send(Event::Input(key)).unwrap();
-                }
-            }
-            if last_tick.elapsed() >= tick_rate {
-                tx.send(Event::Tick).unwrap();
-                last_tick = Instant::now();
-            }
-        }
-    });
-
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    //APP
+    //Terminal
+    let mut terminal = app::start_terminal(); 
+    //Receiver Channel
+    let rx = events::start_input_handling(); 
+    //Menu 
     let menu_titles = vec!["Home", "Boards", "Quit"];
     let mut active_menu_item = views::MenuItem::Boards;
     let mut board_list_state = ListState::default();
-    let mut search: Vec<char> = Vec::new();
-
     board_list_state.select(Some(0));
-
-    terminal.clear()?;
+    let mut group_list_state = ListState::default();
+    group_list_state.select(Some(0)); 
+    //Search 
+    let mut search : Vec<char> = Vec::new(); 
+    //Monday Data
+    let client = monday::get_client().expect("Could not get client.");
+    let mut boards : Vec<objects::Board> = queries::board_list(&client);
+    let mut groups : Vec<objects::Group> = Vec::new(); 
 
     loop {
         terminal.draw(|rect| {
@@ -133,7 +92,7 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
 
             rect.render_widget(tabs, chunks[0]);
             match active_menu_item {
-                views::MenuItem::Home => rect.render_widget(views::render_home(), chunks[1]),
+                views::MenuItem::Home => rect.render_widget(views::Home::render(), chunks[1]),
                 views::MenuItem::Boards => {
                     let board_chunks = Layout::default()
                         .direction(Direction::Horizontal)
@@ -145,11 +104,30 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                     if search.len() > 0 {
                         let search_string: String =
                             search.iter().map(|c| c.to_string()).collect::<String>();
-                        board_temp = utils::search_boards(search_string, &mut board_vec);
+                        board_temp = utils::search_boards(search_string, &mut boards);
                     } else {
-                        board_temp = board_vec.clone();
+                        board_temp = boards.clone();
                     }
-                    let (left, right) = views::render_board_list(&board_temp, &board_list_state);
+                    let (left, right) = views::BoardList::render(&board_temp, &board_list_state);
+                    rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
+                    rect.render_widget(right, board_chunks[1]);
+                }, 
+                views::MenuItem::Detail => {
+                    let board_chunks = Layout::default()
+                    .direction(Direction::Horizontal)
+                    .constraints(
+                        [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
+                    )
+                    .split(chunks[1]);
+                    // let board_temp: Vec<objects::Board>;
+                    // if search.len() > 0 {
+                    //     let search_string: String =
+                    //         search.iter().map(|c| c.to_string()).collect::<String>();
+                    //     board_temp = utils::search_boards(search_string, &mut boards);
+                    // } else {
+                    //     board_temp = boards.clone();
+                    // }
+                    let (left, right) = views::BoardDetail::render(&groups, &group_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
@@ -158,11 +136,10 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
         })?;
 
         match rx.recv()? {
-            Event::Input(event) => match event.modifiers {
+            events::Event::Input(event) => match event.modifiers {
                 KeyModifiers::SHIFT => match event.code {
                     KeyCode::Char('Q') => {
-                        disable_raw_mode()?;
-                        terminal.show_cursor()?;
+                        app::stop_terminal(&mut terminal); 
                         break;
                     }
                     KeyCode::Char('H') => active_menu_item = views::MenuItem::Home,
@@ -172,7 +149,7 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                 _ => match event.code {
                     KeyCode::Down => {
                         if let Some(selected) = board_list_state.selected() {
-                            let amount_boards = board_vec.len();
+                            let amount_boards = boards.len();
                             if selected >= amount_boards - 1 {
                                 board_list_state.select(Some(0));
                             } else {
@@ -182,7 +159,7 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Up => {
                         if let Some(selected) = board_list_state.selected() {
-                            let amount_boards = board_vec.len();
+                            let amount_boards = boards.len();
                             if selected > 0 {
                                 board_list_state.select(Some(selected - 1));
                             } else {
@@ -192,6 +169,11 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Backspace => {
                         search.pop();
+                    }, 
+                    KeyCode::Enter => { 
+                        active_menu_item = views::MenuItem::Detail; 
+                        let selected_board = boards.get(board_list_state.selected().unwrap()).unwrap().clone(); 
+                        groups = queries::board_detail(&client, selected_board.id)
                     }
                     KeyCode::Char(c) => {
                         search.push(c);
@@ -199,7 +181,7 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                     _ => {}
                 },
             },
-            Event::Tick => {}
+            events::Event::Tick => {}
         }
     }
 
