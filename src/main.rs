@@ -101,6 +101,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         )
                         .split(chunks[1]);
                     let board_temp: Vec<objects::Board>;
+                    //Filter by search element
                     if search.len() > 0 {
                         let search_string: String =
                             search.iter().map(|c| c.to_string()).collect::<String>();
@@ -177,6 +178,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Char(c) => {
                         search.push(c);
+                        board_list_state.select(Some(0)); 
                     }
                     _ => {}
                 },
