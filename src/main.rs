@@ -100,16 +100,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let board_temp: Vec<objects::Board>;
-                    //Filter by search element
-                    if search.len() > 0 {
-                        let search_string: String =
-                            search.iter().map(|c| c.to_string()).collect::<String>();
-                        board_temp = utils::search_boards(search_string, &mut boards);
-                    } else {
-                        board_temp = boards.clone();
-                    }
-                    let (left, right) = views::BoardList::render(&board_temp, &board_list_state);
+                    let board_filtered = utils::filter_boards(&boards, &search); 
+                    let (left, right) = views::BoardList::render(&board_filtered, &board_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }, 
@@ -172,8 +164,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         search.pop();
                     }, 
                     KeyCode::Enter => { 
+                        let board_filtered = utils::filter_boards(&boards, &search); 
                         active_menu_item = views::MenuItem::Detail; 
-                        let selected_board = boards.get(board_list_state.selected().unwrap()).unwrap().clone(); 
+                        let selected_board = board_filtered.get(board_list_state.selected().unwrap()).unwrap().clone(); 
                         groups = queries::board_detail(&client, selected_board.id)
                     }
                     KeyCode::Char(c) => {

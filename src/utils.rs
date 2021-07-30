@@ -16,3 +16,16 @@ pub fn search_boards(query: String, boards: &Vec<objects::Board>) -> Vec<objects
     }
     return output;
 }
+
+pub fn filter_boards(boards : &Vec<objects::Board>, search : &Vec<char>) -> Vec<objects::Board> {
+    let output : Vec<objects::Board>; 
+    //Filter by search element
+    if search.len() > 0 {
+        let search_string: String =
+            search.iter().map(|c| c.to_string()).collect::<String>();
+        output = search_boards(search_string, boards);
+    } else {
+        output = boards.clone();
+    }
+    return output; 
+}
