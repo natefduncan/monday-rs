@@ -1,0 +1,742 @@
+ResponseData {
+    boards: Some(
+        [
+            Some(
+                BoardDetailBoards {
+                    groups: Some(
+                        [
+                            Some(
+                                BoardDetailBoardsGroups {
+                                    id: "topics",
+                                    title: "Group Title",
+                                    archived: None,
+                                    color: "#579bfc",
+                                    deleted: None,
+                                    position: "65536",
+                                    items: Some(
+                                        [
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410062931",
+                                                    name: "NA",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410062936",
+                                                    name: "test",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "test",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410062948",
+                                                    name: "NA",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "Construction",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                        ],
+                                    ),
+                                },
+                            ),
+                            Some(
+                                BoardDetailBoardsGroups {
+                                    id: "group_title",
+                                    title: "Group 2",
+                                    archived: None,
+                                    color: "#a25ddc",
+                                    deleted: None,
+                                    position: "98304",
+                                    items: Some(
+                                        [
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410034496",
+                                                    name: "2",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "2",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410034511",
+                                                    name: "D2",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "A2",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410034527",
+                                                    name: "NA",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "Information Technology",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                            Some(
+                                                BoardDetailBoardsGroupsItems {
+                                                    id: "1410034540",
+                                                    name: "NA",
+                                                    state: Some(
+                                                        active,
+                                                    ),
+                                                    column_values: Some(
+                                                        [
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "person",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Person",
+                                                                    type_: "multiple-person",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "status",
+                                                                    text: None,
+                                                                    title: "Status",
+                                                                    type_: "color",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "date4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Date",
+                                                                    type_: "date",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "departments8",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Departments",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "division4",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Division",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "activity7",
+                                                                    text: Some(
+                                                                        "NA",
+                                                                    ),
+                                                                    title: "Activity",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "level6",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Level",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                            Some(
+                                                                BoardDetailBoardsGroupsItemsColumnValues {
+                                                                    id: "phase2",
+                                                                    text: Some(
+                                                                        "",
+                                                                    ),
+                                                                    title: "Phase",
+                                                                    type_: "text",
+                                                                },
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    subscribers: [
+                                                        Some(
+                                                            BoardDetailBoardsGroupsItemsSubscribers {
+                                                                email: "nduncan@fifthpartners.com",
+                                                                id: 15333347,
+                                                                name: "Nathan Duncan",
+                                                            },
+                                                        ),
+                                                    ],
+                                                },
+                                            ),
+                                        ],
+                                    ),
+                                },
+                            ),
+                        ],
+                    ),
+                },
+            ),
+        ],
+    ),
+}

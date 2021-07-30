@@ -28,39 +28,39 @@ pub struct Column {
 
 #[derive(Debug, Clone)]
 pub struct Group {
-    archived: bool,
-    color: String,
-    deleted: bool,
-    id: String,
-    items: Vec<Item>,
-    position: String,
-    title: String,
+    pub archived: bool,
+    pub color: String,
+    pub deleted: bool,
+    pub id: String,
+    pub items: Vec<Item>,
+    pub position: String,
+    pub title: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Item {
-    assets: Vec<Asset>,
-    board: Board,
-    column_values: Vec<ColumnValue>,
-    created_at: Date,
-    creator: User,
-    creator_id: String,
-    group: Group,
-    id: String,
-    name: String,
-    state: State,
-    subscribers: Vec<User>,
-    updated_at: Date,
-    updates: Vec<Update>,
+    // assets: Vec<Asset>,
+    // board: Board,
+    // pub id : u32, 
+    pub column_values: Vec<ColumnValue>,
+    // pub created_at: Date,
+    // creator: User,
+    // creator_id: String,
+    // group: Group,id: String,
+    pub name: String,
+    // state: State,
+    pub subscribers: Vec<User>,
+    // updated_at: Date,
+    // updates: Vec<Update>,
 }
 
 #[derive(Debug, Clone)]
 pub struct ColumnValue {
-    additional_info: JSON,
-    id: String,
-    text: String,
-    title: String,
-    value: JSON,
+    // additional_info: JSON,
+    pub id: String,
+    pub text: String,
+    pub title: String,
+    // value: JSON,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -111,33 +111,33 @@ pub struct Plan {
 
 #[derive(Debug, Clone)]
 pub struct User {
-    account: Account,
-    birthday: Date,
-    country_code: String,
-    created_at: Date,
-    email: String,
-    enabled: bool,
-    id: u32,
-    is_admin: bool,
-    is_guest: bool,
-    is_pending: bool,
-    is_verified: bool,
-    is_view_only: bool,
-    join_date: Date,
-    location: String,
-    mobile_phone: String,
-    name: String,
-    phone: String,
-    photo_original: String,
-    photo_small: String,
-    photo_thumb: String,
-    photo_thumb_small: String,
-    photo_tiny: String,
-    teams: Vec<Team>,
-    time_zome_identifier: String,
-    title: String,
-    url: String,
-    utc_hours_diff: String,
+    // account: Account,
+    // birthday: Date,
+    // country_code: String,
+    // created_at: Date,
+    pub email: String,
+    // enabled: bool,
+    pub id: i64,
+    // is_admin: bool,
+    // is_guest: bool,
+    // is_pending: bool,
+    // is_verified: bool,
+    // is_view_only: bool,
+    // join_date: Date,
+    // location: String,
+    // mobile_phone: String,
+    pub name: String,
+    // phone: String,
+    // photo_original: String,
+    // photo_small: String,
+    // photo_thumb: String,
+    // photo_thumb_small: String,
+    // photo_tiny: String,
+    // teams: Vec<Team>,
+    // time_zome_identifier: String,
+    // title: String,
+    // url: String,
+    // utc_hours_diff: String,
 }
 
 #[derive(Debug, Clone)]
@@ -154,6 +154,7 @@ pub enum State {
     Active,
     Archived,
     Deleted,
+    None
 }
 
 #[derive(Debug, Clone)]

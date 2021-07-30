@@ -18,7 +18,6 @@ pub fn get_client() -> Result<Client, reqwest::Error> {
         )
         .build()
 }
-
 pub fn query<Q: GraphQLQuery>(
     client: &Client,
     variables: Q::Variables,

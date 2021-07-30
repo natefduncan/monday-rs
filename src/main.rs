@@ -32,7 +32,13 @@ enum Event<I> {
     Tick,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
+    let board_id = 1393475156; 
+    let client = monday::get_client().expect("Could not get client.");
+    println!("{:#?}", queries::board_detail(&client, board_id));
+}
+
+fn main2() -> Result<(), Box<dyn std::error::Error>> {
     //Fetch boards
     let client = monday::get_client().expect("Could not get client.");
     let mut board_vec: Vec<objects::Board> = queries::board_list(&client);
@@ -143,7 +149,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     } else {
                         board_temp = board_vec.clone();
                     }
-                    let (left, right) = views::render_boards(&board_temp, &board_list_state);
+                    let (left, right) = views::render_board_list(&board_temp, &board_list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut board_list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }

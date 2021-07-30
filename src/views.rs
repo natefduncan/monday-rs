@@ -46,7 +46,7 @@ pub fn render_home<'a>() -> Paragraph<'a> {
     home
 }
 
-pub fn render_boards<'a>(
+pub fn render_board_list<'a>(
     board_vec: &Vec<objects::Board>,
     board_list_state: &ListState,
 ) -> (List<'a>, Table<'a>) {
@@ -103,4 +103,10 @@ pub fn render_boards<'a>(
     .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]);
 
     (board_list, board_detail)
+}
+
+pub fn render_board_detail<'a>(
+    board : objects::Board
+) {
+   
 }
