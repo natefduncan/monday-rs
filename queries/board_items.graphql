@@ -1,19 +1,7 @@
 query BoardDetail($board_id:Int, $limit:Int, $newest_first:Boolean, $page:Int) {
   boards(ids:[$board_id]) {
     items(limit:$limit,newest_first:$newest_first,page:$page) {
-        id
         name
-        column_values {
-            id
-            text
-            title
-            type
-        }
-        subscribers {
-            email
-            id
-            name
-        }
     }
   }
 }

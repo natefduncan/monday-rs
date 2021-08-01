@@ -153,9 +153,7 @@ impl BoardDetail {
                     .expect("there is always a selected group"),
             )
             .unwrap_or(&objects::Item {
-                column_values: Vec::new(),
                 name: "".to_string(),
-                subscribers: Vec::new()
             })
             .clone();
     

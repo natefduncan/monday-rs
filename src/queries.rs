@@ -72,25 +72,6 @@ fn parse_board_detail_response(res : Response<board_detail::ResponseData>) -> Ve
         let i = item.clone().unwrap(); 
         Item {
             name : i.name, 
-            //COLUMN VALUES
-            column_values : i.column_values.unwrap().iter().map(|column_value| {
-                let column_value = column_value.clone().unwrap();
-                ColumnValue {
-                    id : column_value.id, 
-                    text : column_value.text.unwrap_or("No text".to_string()), 
-                    title : column_value.title, 
-                    type_ : column_value.type_
-                }
-            }).collect::<Vec<ColumnValue>>(), 
-            //SUBSCRIBERS
-            subscribers : i.subscribers.iter().map(|user| {
-                let user = user.clone().unwrap();
-                User {
-                    email : user.email,  
-                    id : user.id,
-                    name : user.name
-                }
-            }).collect::<Vec<User>>(),
         }    
     }).collect::<Vec<Item>>(); 
     return items; 
