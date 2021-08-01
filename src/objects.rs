@@ -28,12 +28,12 @@ pub struct Column {
 
 #[derive(Debug, Clone)]
 pub struct Group {
-    pub archived: bool,
-    pub color: String,
-    pub deleted: bool,
-    pub id: String,
-    pub items: Vec<Item>,
-    pub position: String,
+    // pub archived: bool,
+    // pub color: String,
+    // pub deleted: bool,
+    // pub id: String,
+    // pub items: Vec<Item>,
+    // pub position: String,
     pub title: String,
 }
 
@@ -46,7 +46,7 @@ pub struct Item {
     // pub created_at: Date,
     // creator: User,
     // creator_id: String,
-    // group: Group,id: String,
+    pub group: Group,
     pub name: String,
     // state: State,
     // pub subscribers: Vec<User>,

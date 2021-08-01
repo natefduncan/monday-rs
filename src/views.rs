@@ -154,6 +154,9 @@ impl BoardDetail {
             )
             .unwrap_or(&objects::Item {
                 name: "".to_string(),
+                group : objects::Group {
+                    title : "".to_string()
+                }
             })
             .clone();
     

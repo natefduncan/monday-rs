@@ -71,7 +71,10 @@ fn parse_board_detail_response(res : Response<board_detail::ResponseData>) -> Ve
     let items = board.items.unwrap().iter().map(|item| {
         let i = item.clone().unwrap(); 
         Item {
-            name : i.name, 
+            name : i.name,
+            group : Group {
+                title : "".to_string()
+            }
         }    
     }).collect::<Vec<Item>>(); 
     return items; 
