@@ -60,6 +60,7 @@ pub struct ColumnValue {
     pub id: String,
     pub text: String,
     pub title: String,
+    pub type_ : String
     // value: JSON,
 }
 

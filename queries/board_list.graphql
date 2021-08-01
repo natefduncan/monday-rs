@@ -1,5 +1,5 @@
-query BoardList {
-    boards {
+query BoardList($limit:Int) {
+    boards(limit:$limit) {
         id
         name
     }

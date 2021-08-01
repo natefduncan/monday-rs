@@ -1,4 +1,4 @@
-query BoardDetail($board_id:Int, $group_item_limit:Int) {
+query BoardDetail($board_id:Int, $item_limit:Int) {
   boards(ids:[$board_id]) {
     groups {
         id
@@ -7,7 +7,7 @@ query BoardDetail($board_id:Int, $group_item_limit:Int) {
         color
         deleted
         position
-        items(limit:$group_item_limit) {
+        items(limit:$item_limit) {
             id
             name
             column_values {

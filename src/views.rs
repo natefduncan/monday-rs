@@ -133,64 +133,40 @@ pub struct BoardDetail;
 
 impl BoardDetail {
     pub fn render<'a>(
-        board_detail: &Vec<objects::Group>, 
-        group_list_state : &ListState, 
-    ) -> (List<'a>, Table<'a>) {
+        items: &Vec<objects::Item>, 
+        list_state : &ListState, 
+    ) -> List<'a> {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
-            .title("Groups")
+            .title("Items")
             .border_type(BorderType::Plain);
     
-        let list_items: Vec<ListItem> = board_detail
+        let list_items: Vec<ListItem> = items
             .iter()
-            .map(|x| ListItem::new(x.title.to_owned()))
+            .map(|x| ListItem::new(x.name.to_owned()))
             .collect();
-        let selected_group = board_detail
+        let selected_item = items
             .get(
-                group_list_state
+                list_state
                     .selected()
                     .expect("there is always a selected group"),
             )
-            .unwrap_or(&objects::Group {
-                title: "".to_owned(),
-                id: "".to_owned(),
-                archived : false, 
-                color : "".to_owned(), 
-                position : "".to_owned(), 
-                deleted : false, 
-                items : vec![]
+            .unwrap_or(&objects::Item {
+                column_values: Vec::new(),
+                name: "".to_string(),
+                subscribers: Vec::new()
             })
             .clone();
     
-        let group_list = List::new(list_items).block(board_block).highlight_style(
+        let item_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()
                 .bg(Color::Yellow)
                 .fg(Color::Black)
                 .add_modifier(Modifier::BOLD),
         );
-    
-        let group_items = Table::new(selected_group.items.iter().map(|x| {
-            Row::new(vec![
-                Cell::from(Span::raw(x.name.to_owned()))
-            ])
-        }).collect::<Vec<Row>>()) 
-        .header(Row::new(vec![
-            Cell::from(Span::styled(
-                "Name",
-                Style::default().add_modifier(Modifier::BOLD),
-            )),
-        ]))
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::White))
-                .title("Detail")
-                .border_type(BorderType::Plain),
-        )
-        .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]);
-    
-        (group_list, group_items)
+
+        item_list
     }
 
     pub fn keyup() {

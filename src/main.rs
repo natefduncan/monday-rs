@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Monday Data
     let client = monday::get_client().expect("Could not get client.");
     let mut boards : Vec<objects::Board> = queries::board_list(&client);
-    let mut groups : Vec<objects::Group> = Vec::new(); 
+    let mut items : Vec<objects::Item> = Vec::new(); 
 
     loop {
         terminal.draw(|rect| {
@@ -104,15 +104,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(right, board_chunks[1]);
                 }, 
                 views::MenuItem::Detail => {
-                    let board_chunks = Layout::default()
-                    .direction(Direction::Horizontal)
-                    .constraints(
-                        [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
-                    )
-                    .split(chunks[1]);
-                    let (left, right) = views::BoardDetail::render(&groups, &list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut list_state);
-                    rect.render_widget(right, board_chunks[1]);
+                    let items = views::BoardDetail::render(&items, &list_state);
+                    rect.render_stateful_widget(items, chunks[1], &mut list_state);
                 }
             }
             rect.render_widget(search_block, chunks[2]);
@@ -157,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         let board_filtered = utils::filter_boards(&boards, &search); 
                         active_menu_item = views::MenuItem::Detail; 
                         let selected_board = board_filtered.get(list_state.selected().unwrap()).unwrap().clone(); 
-                        groups = queries::board_detail(&client, selected_board.id); 
+                        items = queries::board_detail(&client, selected_board.id); 
                         search = Vec::new(); 
                     }
                     KeyCode::Char(c) => {
