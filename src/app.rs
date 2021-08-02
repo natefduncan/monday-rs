@@ -19,6 +19,7 @@ pub struct App {
     pub active_menu_item: views::MenuItem,
     pub search: Vec<char>,
     pub client: reqwest::blocking::Client,
+    pub menu_titles : Vec<String>
 }
 
 impl App {
@@ -38,6 +39,7 @@ impl App {
             active_menu_item: active_menu_item,
             search: search,
             client: client,
+            menu_titles : vec!["Home", "Boards", "Items", "Quit"];
         }
     }
 }

@@ -22,7 +22,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Receiver Channel
     let rx = events::start_input_handling();
     //Menu
-    let menu_titles = vec!["Home", "Boards", "Items", "Quit"];
     let mut app = app::App::new();
 
     loop {
@@ -53,7 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .border_type(BorderType::Plain),
                 );
 
-            let menu = menu_titles
+            let menu = app.menu_titles
                 .iter()
                 .map(|t| {
                     let (first, rest) = t.split_at(1);
