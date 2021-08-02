@@ -1,10 +1,17 @@
 use super::objects;
+use aho_corasick::AhoCorasickBuilder;
 
 fn search(query : String, vector : &Vec<String>) -> Vec<bool> {
-    let query_lower: String = query.to_lowercase();
-    return vector.iter().map(|rec| {
-        rec.to_lowercase().split_whitespace().any(|x| x.contains(&query_lower))
-    }).collect::<Vec<bool>>();
+    let patterns = query.split_whitespace(); 
+    let ac = AhoCorasickBuilder::new()
+        .ascii_case_insensitive(true)
+        .build(patterns);
+    vector.iter().map(|string| {
+        match ac.find(string).map(|m| m.pattern()) {
+            Some(v) => true, 
+            None => false
+        }
+    }).collect::<Vec<bool>>()
 }
 
 fn filter_by_bool<T : Clone>(filter_vec : &Vec<T>, bool_vec : &Vec<bool>) -> Vec<T> {
