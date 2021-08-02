@@ -244,6 +244,26 @@ impl ItemDetail {
                 Span::styled("Subscribers: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
                 Span::raw(item.subscribers.iter().map(|sub| sub.name.clone()).collect::<Vec<String>>().join(",")), 
             ]),
+            Spans::from(vec![
+                Span::styled("Updated at: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
+                Span::raw(item.updated_at.clone())
+            ]), 
+            Spans::from(vec![
+                Span::styled("Group: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
+                Span::raw(item.group.title.clone())
+            ]),
+            Spans::from(vec![
+                Span::styled("Updates: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
+                Span::raw(item.updates.iter().map(|update| {
+                    update.text_body.clone()
+                }).collect::<Vec<String>>().join("; "))
+            ]), 
+            Spans::from(vec![
+                Span::styled("Column Values: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
+                Span::raw(item.column_values.iter().map(|cv| {
+                    format!("{}: {}", cv.title, cv.text)
+                }).collect::<Vec<String>>().join("; "))
+            ])
         ]; 
         let p = Paragraph::new(text)
             .block(board_block)
