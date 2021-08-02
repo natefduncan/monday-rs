@@ -6,6 +6,7 @@ use tui::{
 };
 
 use super::objects;
+use super::utils; 
 
 //Menu enum
 #[derive(Copy, Clone, Debug)]
@@ -116,12 +117,26 @@ impl BoardList {
         (board_list, board_detail)
     }
 
-    pub fn keyup() {
-
+    pub fn keyup(list_state : &mut ListState, boards : &Vec<objects::Board>, search : &Vec<char>) {
+        if let Some(selected) = list_state.selected() {
+            let amount_boards = utils::filter_boards(&boards, &search).len(); 
+            if selected > 0 {
+                list_state.select(Some(selected - 1)); 
+            } else {
+                list_state.select(Some(amount_boards - 1));
+            }
+        }
     }
 
-    pub fn keydown() {
-
+    pub fn keydown(list_state : &mut ListState, boards : &Vec<objects::Board>, search : &Vec<char>) {
+        if let Some(selected) = list_state.selected() {
+            let list_length = utils::filter_boards(&boards, &search).len();
+            if selected >= list_length - 1 {
+                list_state.select(Some(0));
+            } else {
+                list_state.select(Some(selected + 1));
+            }
+        }
     }
 
     pub fn keyenter() {
@@ -170,12 +185,26 @@ impl BoardDetail {
         item_list
     }
 
-    pub fn keyup() {
-
+    pub fn keyup(list_state : &mut ListState, items : &Vec<objects::Item>, search : &Vec<char>) {
+        if let Some(selected) = list_state.selected() {
+            let amount_boards = utils::filter_items(&items, &search).len();
+            if selected > 0 {
+                list_state.select(Some(selected - 1)); 
+            } else {
+                list_state.select(Some(amount_boards - 1));
+            }
+        }
     }
 
-    pub fn keydown() {
-
+    pub fn keydown(list_state : &mut ListState, items : &Vec<objects::Item>, search : &Vec<char>) {
+        if let Some(selected) = list_state.selected() {
+            let list_length = utils::filter_items(&items, &search).len();
+            if selected >= list_length - 1 {
+                list_state.select(Some(0));
+            } else {
+                list_state.select(Some(selected + 1));
+            }
+        }
     }
 
     pub fn keyenter() {

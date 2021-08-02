@@ -125,23 +125,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 },
                 _ => match event.code {
                     KeyCode::Down => {
-                        if let Some(selected) = list_state.selected() {
-                            let amount_boards = boards.len();
-                            if selected >= amount_boards - 1 {
-                                list_state.select(Some(0));
-                            } else {
-                                list_state.select(Some(selected + 1));
-                            }
-                        }
-                    }
+                        match active_menu_item {
+                            views::MenuItem::Boards => views::BoardList::keydown(&mut list_state, &boards, &search), 
+                            views::MenuItem::Detail => views::BoardDetail::keydown(&mut list_state, &items, &search), 
+                            _ => ()
+                        }                    }
                     KeyCode::Up => {
-                        if let Some(selected) = list_state.selected() {
-                            let amount_boards = boards.len();
-                            if selected > 0 {
-                                list_state.select(Some(selected - 1)); 
-                            } else {
-                                list_state.select(Some(amount_boards - 1));
-                            }
+                        match active_menu_item {
+                            views::MenuItem::Boards => views::BoardList::keyup(&mut list_state, &boards, &search), 
+                            views::MenuItem::Detail => views::BoardDetail::keyup(&mut list_state, &items, &search), 
+                            _ => ()
                         }
                     }
                     KeyCode::Backspace => {
