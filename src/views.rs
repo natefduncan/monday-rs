@@ -235,6 +235,19 @@ impl ItemDetail {
             .title("Item")
             .border_type(BorderType::Plain);
 
+        let mut column_value_span : Vec<Span> = vec![
+            Span::styled("Column Values: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
+        ];
+        for cv in item.column_values.iter() {
+            if cv.text != "" {
+                column_value_span.append(&mut vec![
+                    Span::styled(cv.title.clone(), Style::default().add_modifier(Modifier::BOLD).fg(Color::LightCyan)),
+                    Span::raw(": "),
+                    Span::styled(cv.text.clone(), Style::default().add_modifier(Modifier::ITALIC)), 
+                    Span::raw(" | "), 
+                ])
+            }
+        };
         let text = vec![
             Spans::from(vec![
                 Span::styled("Name: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
@@ -242,7 +255,7 @@ impl ItemDetail {
             ]), 
             Spans::from(vec![
                 Span::styled("Subscribers: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
-                Span::raw(item.subscribers.iter().map(|sub| sub.name.clone()).collect::<Vec<String>>().join(",")), 
+                Span::raw(item.subscribers.iter().map(|sub| sub.name.clone()).collect::<Vec<String>>().join(", ")), 
             ]),
             Spans::from(vec![
                 Span::styled("Updated at: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
@@ -256,14 +269,9 @@ impl ItemDetail {
                 Span::styled("Updates: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
                 Span::raw(item.updates.iter().map(|update| {
                     update.text_body.clone()
-                }).collect::<Vec<String>>().join("; "))
+                }).collect::<Vec<String>>().join(" | "))
             ]), 
-            Spans::from(vec![
-                Span::styled("Column Values: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
-                Span::raw(item.column_values.iter().map(|cv| {
-                    format!("{}: {}", cv.title, cv.text)
-                }).collect::<Vec<String>>().join("; "))
-            ])
+            Spans::from(column_value_span),
         ]; 
         let p = Paragraph::new(text)
             .block(board_block)
