@@ -148,14 +148,14 @@ impl BoardList {
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
-        app.items = queries::board_detail(&app.client, selected_board.id);
+        app.items = queries::item_list(&app.client, selected_board.id);
         app.search = Vec::new();
     }
 }
 
-pub struct BoardDetail;
+pub struct ItemList;
 
-impl BoardDetail {
+impl ItemList {
     pub fn render<'a>(items: &Vec<objects::Item>, list_state: &ListState) -> List<'a> {
         let board_block = Block::default()
             .borders(Borders::ALL)
@@ -173,12 +173,7 @@ impl BoardDetail {
                     .selected()
                     .expect("there is always a selected group"),
             )
-            .unwrap_or(&objects::Item {
-                name: "".to_string(),
-                group: objects::Group {
-                    title: "".to_string(),
-                },
-            })
+            .unwrap_or(&objects::Item::new())
             .clone();
 
         let item_list = List::new(list_items).block(board_block).highlight_style(
@@ -213,5 +208,17 @@ impl BoardDetail {
         }
     }
 
-    pub fn keyenter() {}
+    pub fn keyenter(app : &mut app::App) {
+        let item_filtered = utils::filter_items(&app.items, &app.search);
+        app.active_menu_item = MenuItem::ItemDetail;
+        let selected_item = item_filtered
+            .get(app.list_state.selected().unwrap())
+            .unwrap()
+            .clone();
+        println!("{:?}", app.list_state.selected()); 
+        println!("{:?}", selected_item); 
+        app.item_detail = queries::item_detail(&app.client, selected_item.id);
+        app.search = Vec::new();        
+
+    }
 }
