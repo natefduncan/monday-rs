@@ -91,11 +91,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }
-                views::MenuItem::Detail => {
+                views::MenuItem::Items => {
                     let filtered = utils::filter_items(&app.items, &app.search);
                     let list_items = views::BoardDetail::render(&filtered, &app.list_state);
                     rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state);
-                }
+                }, 
+                views::MenuItem::ItemDetail => ()
             }
             rect.render_widget(search_block, chunks[2]);
         })?;
@@ -114,12 +115,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 _ => match event.code {
                     KeyCode::Down => match app.active_menu_item {
                         views::MenuItem::Boards => views::BoardList::keydown(&mut app),
-                        views::MenuItem::Detail => views::BoardDetail::keydown(&mut app),
+                        views::MenuItem::Items => views::BoardDetail::keydown(&mut app),
                         _ => (),
                     },
                     KeyCode::Up => match app.active_menu_item {
                         views::MenuItem::Boards => views::BoardList::keyup(&mut app),
-                        views::MenuItem::Detail => views::BoardDetail::keyup(&mut app),
+                        views::MenuItem::Items => views::BoardDetail::keyup(&mut app),
                         _ => (),
                     },
                     KeyCode::Backspace => {

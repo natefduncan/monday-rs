@@ -15,7 +15,8 @@ use super::utils;
 pub enum MenuItem {
     Home,
     Boards,
-    Detail,
+    Items,
+    ItemDetail
 }
 
 impl From<MenuItem> for usize {
@@ -23,7 +24,8 @@ impl From<MenuItem> for usize {
         match input {
             MenuItem::Home => 0,
             MenuItem::Boards => 1,
-            MenuItem::Detail => 2,
+            MenuItem::Items => 2,
+            MenuItem::ItemDetail => 3
         }
     }
 }
@@ -141,7 +143,7 @@ impl BoardList {
 
     pub fn keyenter(app: &mut app::App) {
         let board_filtered = utils::filter_boards(&app.boards, &app.search);
-        app.active_menu_item = MenuItem::Detail;
+        app.active_menu_item = MenuItem::Items;
         let selected_board = board_filtered
             .get(app.list_state.selected().unwrap())
             .unwrap()
