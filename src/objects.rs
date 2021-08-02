@@ -37,21 +37,44 @@ pub struct Group {
     pub title: String,
 }
 
+impl Group {
+    pub fn new() -> Group {
+        Group {
+            title : "".to_string()
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Item {
     // assets: Vec<Asset>,
     // board: Board,
-    // pub id : u32,
-    // pub column_values: Vec<ColumnValue>,
+    pub id : u32,
+    pub column_values: Vec<ColumnValue>,
     // pub created_at: Date,
-    // creator: User,
+    pub creator: User,
     // creator_id: String,
     pub group: Group,
     pub name: String,
     // state: State,
-    // pub subscribers: Vec<User>,
-    // updated_at: Date,
-    // updates: Vec<Update>,
+    pub subscribers: Vec<User>,
+    pub updated_at: Date,
+    pub updates: Vec<Update>,
+}
+
+impl Item {
+    pub fn new() -> Item {
+        Item {
+            id : 0, 
+            column_values : Vec::new(), 
+            creator : User::new(), 
+            group : Group::new(),
+            name : "".to_string(), 
+            subscribers : Vec::new(), 
+            updated_at : Date::new(), 
+            updates : Vec::new()
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -65,6 +88,12 @@ pub struct ColumnValue {
 
 #[derive(Debug, Copy, Clone)]
 pub struct Date {}
+
+impl Date {
+    pub fn new() -> Date {
+        Date {}
+    }
+}
 
 #[derive(Debug, Copy, Clone)]
 pub struct JSON {}
@@ -140,6 +169,14 @@ pub struct User {
     // utc_hours_diff: String,
 }
 
+impl User {
+    pub fn new() -> User {
+        email : "".to_string(), 
+        id : 0, 
+        name : "".to_string()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Team {
     id: u32,
@@ -169,13 +206,13 @@ pub struct ISO8601DateTime {}
 
 #[derive(Debug, Clone)]
 pub struct Update {
-    assets: Vec<Asset>,
-    body: String,
-    created_at: Date,
+    // assets: Vec<Asset>,
+    // body: String,
+    // created_at: Date,
     creator: User,
-    creator_id: String,
-    id: String,
-    item_id: String,
+    // creator_id: String,
+    // id: String,
+    // item_id: String,
     replies: Vec<Reply>,
     text_body: String,
     updated_at: Date,
