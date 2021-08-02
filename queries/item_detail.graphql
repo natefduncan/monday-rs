@@ -1,0 +1,30 @@
+query ItemDetail($item_id:Int) {
+    items(ids:[$item_id]) {
+        name
+        id
+        group {
+            title
+        }
+        subscribers {
+            id
+            email
+            name
+        } 
+        updates {
+            text_body
+            replies
+            updated_at
+            creator {
+                id
+                email
+                name
+            }
+        }
+        column_values {
+            id 
+            text
+            title
+            type_
+        }
+    }
+}
