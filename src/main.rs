@@ -3,7 +3,7 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, ListState, Paragraph, Tabs,
+        Block, BorderType, Borders, Paragraph, Tabs,
     },
 };
 
