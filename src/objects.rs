@@ -58,7 +58,7 @@ pub struct Item {
     pub name: String,
     // state: State,
     pub subscribers: Vec<User>,
-    pub updated_at: Date,
+    pub updated_at: String,
     pub updates: Vec<Update>,
 }
 
@@ -71,7 +71,7 @@ impl Item {
             group : Group::new(),
             name : "".to_string(), 
             subscribers : Vec::new(), 
-            updated_at : Date::new(), 
+            updated_at : String::from(""), 
             updates : Vec::new()
         }
     }
@@ -83,15 +83,19 @@ pub struct ColumnValue {
     pub id: String,
     pub text: String,
     pub title: String,
-    pub type_: String, // value: JSON,
+    pub r#type: String, // value: JSON,
 }
 
-#[derive(Debug, Copy, Clone)]
-pub struct Date {}
+#[derive(Debug, Clone)]
+pub struct Date {
+    pub dt : String
+}
 
 impl Date {
     pub fn new() -> Date {
-        Date {}
+        Date {
+            dt : "".to_string()
+        }
     }
 }
 
@@ -171,9 +175,11 @@ pub struct User {
 
 impl User {
     pub fn new() -> User {
-        email : "".to_string(), 
-        id : 0, 
-        name : "".to_string()
+        User {
+            email : "".to_string(), 
+            id : 0, 
+            name : "".to_string()
+        }
     }
 }
 
@@ -215,7 +221,7 @@ pub struct Update {
     // item_id: String,
     replies: Vec<Reply>,
     text_body: String,
-    updated_at: Date,
+    updated_at: String,
 }
 
 #[derive(Debug, Clone)]
@@ -226,7 +232,7 @@ pub struct Reply {
     creator_id: String,
     id: String,
     text_body: String,
-    updated_at: Date,
+    updated_at: String,
 }
 
 #[derive(Debug, Clone)]
