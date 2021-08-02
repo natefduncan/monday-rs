@@ -104,8 +104,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(right, board_chunks[1]);
                 }, 
                 views::MenuItem::Detail => {
-                    let items = views::BoardDetail::render(&items, &list_state);
-                    rect.render_stateful_widget(items, chunks[1], &mut list_state);
+                    let filtered = utils::filter_items(&items, &search); 
+                    let list_items = views::BoardDetail::render(&filtered, &list_state);
+                    rect.render_stateful_widget(list_items, chunks[1], &mut list_state);
                 }
             }
             rect.render_widget(search_block, chunks[2]);
