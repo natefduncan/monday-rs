@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Receiver Channel
     let rx = events::start_input_handling();
     //Menu
-    let menu_titles = vec!["Home", "Boards", "Quit"];
+    let menu_titles = vec!["Home", "Boards", "Items", "Quit"];
     let mut app = app::App::new();
 
     loop {
@@ -113,6 +113,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home,
                     KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards,
+                    KeyCode::Char('I') => app.active_menu_item = views::MenuItem::Items,
                     _ => {}
                 },
                 _ => match event.code {

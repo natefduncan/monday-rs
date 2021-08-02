@@ -2,7 +2,7 @@ use tui::{
     layout::{Alignment, Constraint},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table},
+    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap},
 };
 
 use super::app;
@@ -230,18 +230,20 @@ impl ItemDetail {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
-            .title("Items")
+            .title("Item")
             .border_type(BorderType::Plain);
 
         let text = vec![
             Spans::from(vec![
+                Span::styled("Name: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
                 Span::raw(item.name.clone())
             ])
         ]; 
         let p = Paragraph::new(text)
             .block(board_block)
             .style(Style::default().fg(Color::White).bg(Color::Black))
-            .alignment(Alignment::Left);
+            .alignment(Alignment::Left)
+            .wrap(Wrap {trim : true});
         p
     }
 
