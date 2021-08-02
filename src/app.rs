@@ -5,8 +5,48 @@ use crossterm::{
 use tui::{
     Terminal, 
     backend::{CrosstermBackend},
+    widgets::{ListState}
 };  
 use std::io; 
+use reqwest;
+
+use super::objects; 
+use super::views; 
+use super::monday; 
+use super::queries; 
+
+pub struct App {
+    pub list_state : ListState, 
+    pub boards : Vec<objects::Board>,
+    pub items : Vec<objects::Item>, 
+    pub active_menu_item : views::MenuItem, 
+    pub search : Vec<char>, 
+    pub client : reqwest::blocking::Client
+}
+
+impl App {
+
+    pub fn new() -> App {
+        let mut active_menu_item = views::MenuItem::Boards;
+        let mut list_state = ListState::default();
+        list_state.select(Some(0));
+        let mut search : Vec<char> = Vec::new(); 
+        let client = monday::get_client().expect("Could not get client.");
+        let mut boards : Vec<objects::Board> = queries::board_list(&client);
+        let mut items : Vec<objects::Item> = Vec::new(); 
+        App {
+            list_state : list_state,
+            boards : boards, 
+            items : items, 
+            active_menu_item : active_menu_item, 
+            search : search, 
+            client : client
+        }
+    }
+
+}
+
+
 
 pub fn start_terminal() -> Terminal<CrosstermBackend<io::Stdout>> {
     enable_raw_mode().expect("start raw mode");

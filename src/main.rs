@@ -27,15 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rx = events::start_input_handling(); 
     //Menu 
     let menu_titles = vec!["Home", "Boards", "Quit"];
-    let mut active_menu_item = views::MenuItem::Boards;
-    let mut list_state = ListState::default();
-    list_state.select(Some(0));
-    //Search 
-    let mut search : Vec<char> = Vec::new(); 
-    //Monday Data
-    let client = monday::get_client().expect("Could not get client.");
-    let mut boards : Vec<objects::Board> = queries::board_list(&client);
-    let mut items : Vec<objects::Item> = Vec::new(); 
+    let mut app = app::App::new(); 
 
     loop {
         terminal.draw(|rect| {
@@ -53,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .split(size);
 
-            let search_text: String = search.iter().map(|x| x.to_string()).collect::<String>();
+            let search_text: String = app.search.iter().map(|x| x.to_string()).collect::<String>();
             let search_block = Paragraph::new(search_text)
                 .style(Style::default().fg(Color::LightCyan))
                 .alignment(Alignment::Center)
@@ -82,14 +74,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .collect();
 
             let tabs = Tabs::new(menu)
-                .select(active_menu_item.into())
+                .select(app.active_menu_item.into())
                 .block(Block::default().title("Menu").borders(Borders::ALL))
                 .style(Style::default().fg(Color::White))
                 .highlight_style(Style::default().fg(Color::Yellow))
                 .divider(Span::raw("|"));
 
             rect.render_widget(tabs, chunks[0]);
-            match active_menu_item {
+            match app.active_menu_item {
                 views::MenuItem::Home => rect.render_widget(views::Home::render(), chunks[1]),
                 views::MenuItem::Boards => {
                     let board_chunks = Layout::default()
@@ -98,15 +90,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let board_filtered = utils::filter_boards(&boards, &search); 
-                    let (left, right) = views::BoardList::render(&board_filtered, &list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut list_state);
+                    let board_filtered = utils::filter_boards(&app.boards, &app.search); 
+                    let (left, right) = views::BoardList::render(&board_filtered, &app.list_state);
+                    rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state);
                     rect.render_widget(right, board_chunks[1]);
                 }, 
                 views::MenuItem::Detail => {
-                    let filtered = utils::filter_items(&items, &search); 
-                    let list_items = views::BoardDetail::render(&filtered, &list_state);
-                    rect.render_stateful_widget(list_items, chunks[1], &mut list_state);
+                    let filtered = utils::filter_items(&app.items, &app.search); 
+                    let list_items = views::BoardDetail::render(&filtered, &app.list_state);
+                    rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state);
                 }
             }
             rect.render_widget(search_block, chunks[2]);
@@ -119,37 +111,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         app::stop_terminal(&mut terminal); 
                         break;
                     }
-                    KeyCode::Char('H') => active_menu_item = views::MenuItem::Home,
-                    KeyCode::Char('B') => active_menu_item = views::MenuItem::Boards,
+                    KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home,
+                    KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards,
                     _ => {}
                 },
                 _ => match event.code {
                     KeyCode::Down => {
-                        match active_menu_item {
-                            views::MenuItem::Boards => views::BoardList::keydown(&mut list_state, &boards, &search), 
-                            views::MenuItem::Detail => views::BoardDetail::keydown(&mut list_state, &items, &search), 
+                        match app.active_menu_item {
+                            views::MenuItem::Boards => views::BoardList::keydown(&mut app), 
+                            views::MenuItem::Detail => views::BoardDetail::keydown(&mut app), 
                             _ => ()
                         }                    }
                     KeyCode::Up => {
-                        match active_menu_item {
-                            views::MenuItem::Boards => views::BoardList::keyup(&mut list_state, &boards, &search), 
-                            views::MenuItem::Detail => views::BoardDetail::keyup(&mut list_state, &items, &search), 
+                        match app.active_menu_item {
+                            views::MenuItem::Boards => views::BoardList::keyup(&mut app), 
+                            views::MenuItem::Detail => views::BoardDetail::keyup(&mut app), 
                             _ => ()
                         }
                     }
                     KeyCode::Backspace => {
-                        search.pop();
+                        app.search.pop();
                     }, 
                     KeyCode::Enter => { 
-                        let board_filtered = utils::filter_boards(&boards, &search); 
-                        active_menu_item = views::MenuItem::Detail; 
-                        let selected_board = board_filtered.get(list_state.selected().unwrap()).unwrap().clone(); 
-                        items = queries::board_detail(&client, selected_board.id); 
-                        search = Vec::new(); 
+                        match app.active_menu_item {
+                            views::MenuItem::Boards => views::BoardList::keyenter(&mut app), 
+                            _ => ()
+                        }
+
                     }
                     KeyCode::Char(c) => {
-                        search.push(c);
-                        list_state.select(Some(0)); 
+                        app.search.push(c);
+                        app.list_state.select(Some(0)); 
                     }
                     _ => {}
                 },

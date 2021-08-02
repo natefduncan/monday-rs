@@ -7,6 +7,9 @@ use tui::{
 
 use super::objects;
 use super::utils; 
+use super::monday; 
+use super::queries; 
+use super::app; 
 
 //Menu enum
 #[derive(Copy, Clone, Debug)]
@@ -117,30 +120,34 @@ impl BoardList {
         (board_list, board_detail)
     }
 
-    pub fn keyup(list_state : &mut ListState, boards : &Vec<objects::Board>, search : &Vec<char>) {
-        if let Some(selected) = list_state.selected() {
-            let amount_boards = utils::filter_boards(&boards, &search).len(); 
+    pub fn keyup(app : &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let amount_boards = utils::filter_boards(&app.boards, &app.search).len(); 
             if selected > 0 {
-                list_state.select(Some(selected - 1)); 
+                app.list_state.select(Some(selected - 1)); 
             } else {
-                list_state.select(Some(amount_boards - 1));
+                app.list_state.select(Some(amount_boards - 1));
             }
         }
     }
 
-    pub fn keydown(list_state : &mut ListState, boards : &Vec<objects::Board>, search : &Vec<char>) {
-        if let Some(selected) = list_state.selected() {
-            let list_length = utils::filter_boards(&boards, &search).len();
+    pub fn keydown(app : &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let list_length = utils::filter_boards(&app.boards, &app.search).len();
             if selected >= list_length - 1 {
-                list_state.select(Some(0));
+                app.list_state.select(Some(0));
             } else {
-                list_state.select(Some(selected + 1));
+                app.list_state.select(Some(selected + 1));
             }
         }
     }
 
-    pub fn keyenter() {
-        
+    pub fn keyenter(app : &mut app::App) {
+        let board_filtered = utils::filter_boards(&app.boards, &app.search); 
+        app.active_menu_item = MenuItem::Detail; 
+        let selected_board = board_filtered.get(app.list_state.selected().unwrap()).unwrap().clone(); 
+        app.items = queries::board_detail(&app.client, selected_board.id); 
+        app.search = Vec::new(); 
     }
 }
 
@@ -185,24 +192,24 @@ impl BoardDetail {
         item_list
     }
 
-    pub fn keyup(list_state : &mut ListState, items : &Vec<objects::Item>, search : &Vec<char>) {
-        if let Some(selected) = list_state.selected() {
-            let amount_boards = utils::filter_items(&items, &search).len();
+    pub fn keyup(app : &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let amount_boards = utils::filter_items(&app.items, &app.search).len();
             if selected > 0 {
-                list_state.select(Some(selected - 1)); 
+                app.list_state.select(Some(selected - 1)); 
             } else {
-                list_state.select(Some(amount_boards - 1));
+                app.list_state.select(Some(amount_boards - 1));
             }
         }
     }
 
-    pub fn keydown(list_state : &mut ListState, items : &Vec<objects::Item>, search : &Vec<char>) {
-        if let Some(selected) = list_state.selected() {
-            let list_length = utils::filter_items(&items, &search).len();
+    pub fn keydown(app : &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let list_length = utils::filter_items(&app.items, &app.search).len();
             if selected >= list_length - 1 {
-                list_state.select(Some(0));
+                app.list_state.select(Some(0));
             } else {
-                list_state.select(Some(selected + 1));
+                app.list_state.select(Some(selected + 1));
             }
         }
     }
