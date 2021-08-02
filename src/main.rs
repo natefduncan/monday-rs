@@ -15,7 +15,13 @@ mod queries;
 mod utils;
 mod views;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
+    let client = monday::get_client().expect("Could not get client.");
+    let item = queries::item_detail(&client, "1532014668".to_string()); 
+    println!("{:?}", item); 
+}
+
+fn main2() -> Result<(), Box<dyn std::error::Error>> {
     //APP
     //Terminal
     let mut terminal = app::start_terminal();

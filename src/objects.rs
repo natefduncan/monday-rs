@@ -49,7 +49,7 @@ impl Group {
 pub struct Item {
     // assets: Vec<Asset>,
     // board: Board,
-    pub id : u32,
+    pub id : String,
     pub column_values: Vec<ColumnValue>,
     // pub created_at: Date,
     pub creator: User,
@@ -65,7 +65,7 @@ pub struct Item {
 impl Item {
     pub fn new() -> Item {
         Item {
-            id : 0, 
+            id : String::from(""), 
             column_values : Vec::new(), 
             creator : User::new(), 
             group : Group::new(),
@@ -215,24 +215,24 @@ pub struct Update {
     // assets: Vec<Asset>,
     // body: String,
     // created_at: Date,
-    creator: User,
+    pub creator: User,
     // creator_id: String,
     // id: String,
     // item_id: String,
-    replies: Vec<Reply>,
-    text_body: String,
-    updated_at: String,
+    pub replies: Vec<Reply>,
+    pub text_body: String,
+    pub updated_at: String,
 }
 
 #[derive(Debug, Clone)]
 pub struct Reply {
-    body: String,
-    created_at: Date,
-    creator: User,
-    creator_id: String,
-    id: String,
-    text_body: String,
-    updated_at: String,
+    // body: String,
+    // created_at: Date,
+    pub creator: User,
+    // creator_id: String,
+    // id: String,
+    pub text_body: String,
+    pub updated_at: String,
 }
 
 #[derive(Debug, Clone)]
