@@ -160,8 +160,9 @@ impl ItemList {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
-            .title("Items")
+            .title("Item")
             .border_type(BorderType::Plain);
+            
 
         let list_items: Vec<ListItem> = items
             .iter()
@@ -175,6 +176,7 @@ impl ItemList {
             )
             .unwrap_or(&objects::Item::new())
             .clone();
+
 
         let item_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()
@@ -215,10 +217,43 @@ impl ItemList {
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
-        println!("{:?}", app.list_state.selected()); 
-        println!("{:?}", selected_item); 
         app.item_detail = queries::item_detail(&app.client, selected_item.id);
         app.search = Vec::new();        
+
+    }
+}
+
+pub struct ItemDetail;
+
+impl ItemDetail {
+    pub fn render<'a>(item: &objects::Item) -> Paragraph<'a> {
+        let board_block = Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::White))
+            .title("Items")
+            .border_type(BorderType::Plain);
+
+        let text = vec![
+            Spans::from(vec![
+                Span::raw(item.name.clone())
+            ])
+        ]; 
+        let p = Paragraph::new(text)
+            .block(board_block)
+            .style(Style::default().fg(Color::White).bg(Color::Black))
+            .alignment(Alignment::Left);
+        p
+    }
+
+    pub fn keyup(app: &mut app::App) {
+
+    }
+
+    pub fn keydown(app: &mut app::App) {
+
+    }
+
+    pub fn keyenter(app : &mut app::App) {
 
     }
 }

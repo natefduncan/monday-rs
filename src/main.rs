@@ -15,13 +15,7 @@ mod queries;
 mod utils;
 mod views;
 
-fn main() {
-    let client = monday::get_client().expect("Could not get client.");
-    let item = queries::item_detail(&client, "1532014668".to_string()); 
-    println!("{:?}", item); 
-}
-
-fn main2() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     //APP
     //Terminal
     let mut terminal = app::start_terminal();
@@ -103,7 +97,8 @@ fn main2() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state);
                 }, 
                 views::MenuItem::ItemDetail => {
-
+                    let detail = views::ItemDetail::render(&app.item_detail); 
+                    rect.render_widget(detail, chunks[1]); 
                 }
             }
             rect.render_widget(search_block, chunks[2]);
