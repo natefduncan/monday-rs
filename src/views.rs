@@ -150,6 +150,7 @@ impl BoardList {
             .clone();
         app.items = queries::item_list(&app.client, selected_board.id);
         app.search = Vec::new();
+        app.menu_titles = vec!["Home", "Boards", "Items", "Add Item", "Quit"].iter().map(|x| x.to_string()).collect::<Vec<String>>();
     }
 }
 
@@ -218,7 +219,8 @@ impl ItemList {
             .unwrap()
             .clone();
         app.item_detail = queries::item_detail(&app.client, selected_item.id);
-        app.search = Vec::new();        
+        app.search = Vec::new();     
+        app.menu_titles = vec!["Home", "Boards", "Items", "Add Comment", "Change Status", "Quit"].iter().map(|x| x.to_string()).collect();   
 
     }
 }
@@ -236,8 +238,12 @@ impl ItemDetail {
         let text = vec![
             Spans::from(vec![
                 Span::styled("Name: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
-                Span::raw(item.name.clone())
-            ])
+                Span::raw(item.name.clone()), 
+            ]), 
+            Spans::from(vec![
+                Span::styled("Subscribers: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
+                Span::raw(item.subscribers.iter().map(|sub| sub.name.clone()).collect::<Vec<String>>().join(",")), 
+            ]),
         ]; 
         let p = Paragraph::new(text)
             .block(board_block)

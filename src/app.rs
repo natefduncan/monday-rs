@@ -39,7 +39,7 @@ impl App {
             active_menu_item: active_menu_item,
             search: search,
             client: client,
-            menu_titles : vec!["Home", "Boards", "Items", "Quit"];
+            menu_titles : vec!["Home", "Boards", "Items", "Quit"].iter().map(|x| x.to_string()).collect::<Vec<String>>()
         }
     }
 }
