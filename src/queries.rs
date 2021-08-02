@@ -13,16 +13,14 @@ use reqwest::blocking::Client;
 struct BoardList;
 
 pub fn board_list(client: &Client) -> Vec<Board> {
-    let variables = board_list::Variables {
-        limit : Some(50)
-    };
+    let variables = board_list::Variables { limit: Some(50) };
     let res: Response<board_list::ResponseData> =
         monday::query::<BoardList>(&client, variables).expect("Could not execute query.");
-    let boards = parse_board_list_response(res); 
+    let boards = parse_board_list_response(res);
     return boards;
 }
 
-fn parse_board_list_response(res : Response<board_list::ResponseData>) -> Vec<Board> {
+fn parse_board_list_response(res: Response<board_list::ResponseData>) -> Vec<Board> {
     let data = res.data.expect("missing response data.");
     let boards: Vec<Board> = match data.boards {
         Some(arr) => arr
@@ -40,7 +38,7 @@ fn parse_board_list_response(res : Response<board_list::ResponseData>) -> Vec<Bo
             .collect(),
         None => vec![],
     };
-    return boards; 
+    return boards;
 }
 
 //BOARD DETAIL
@@ -52,30 +50,41 @@ fn parse_board_list_response(res : Response<board_list::ResponseData>) -> Vec<Bo
 )]
 struct BoardDetail;
 
-pub fn board_detail(client: &Client, board_id : String) -> Vec<Item> {
+pub fn board_detail(client: &Client, board_id: String) -> Vec<Item> {
     let variables = board_detail::Variables {
-        board_id : Some(board_id.parse::<i64>().expect("can convert to i64")), 
-        limit : Some(50), 
-        newest_first : Some(true), 
-        page : Some(1)
+        board_id: Some(board_id.parse::<i64>().expect("can convert to i64")),
+        limit: Some(50),
+        newest_first: Some(true),
+        page: Some(1),
     };
     let res: Response<board_detail::ResponseData> =
         monday::query::<BoardDetail>(&client, variables).expect("Could not execute query.");
     parse_board_detail_response(res)
 }
 
-fn parse_board_detail_response(res : Response<board_detail::ResponseData>) -> Vec<Item> {
+fn parse_board_detail_response(res: Response<board_detail::ResponseData>) -> Vec<Item> {
     let data = res.data.expect("missing response data.");
-    let board = data.boards.unwrap().into_iter().nth(0).expect("missing first value").unwrap();  
+    let board = data
+        .boards
+        .unwrap()
+        .into_iter()
+        .nth(0)
+        .expect("missing first value")
+        .unwrap();
     //ITEMS
-    let items = board.items.unwrap().iter().map(|item| {
-        let i = item.clone().unwrap(); 
-        Item {
-            name : i.name,
-            group : Group {
-                title : "".to_string()
+    let items = board
+        .items
+        .unwrap()
+        .iter()
+        .map(|item| {
+            let i = item.clone().unwrap();
+            Item {
+                name: i.name,
+                group: Group {
+                    title: "".to_string(),
+                },
             }
-        }    
-    }).collect::<Vec<Item>>(); 
-    return items; 
+        })
+        .collect::<Vec<Item>>();
+    return items;
 }

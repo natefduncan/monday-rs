@@ -1,7 +1,7 @@
+use crossterm::event::{self, Event as CEvent, KeyEvent};
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
-use crossterm::event::{self, Event as CEvent, KeyEvent}; 
 
 //Event loop enum
 pub enum Event<I> {
@@ -31,5 +31,5 @@ pub fn start_input_handling() -> mpsc::Receiver<Event<KeyEvent>> {
             }
         }
     });
-    return rx; 
+    return rx;
 }

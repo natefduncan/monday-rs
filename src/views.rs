@@ -2,20 +2,20 @@ use tui::{
     layout::{Alignment, Constraint},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{Paragraph, List, ListState, Table, ListItem, Block, Borders, BorderType, Row, Cell}
+    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table},
 };
 
+use super::app;
 use super::objects;
-use super::utils; 
-use super::queries; 
-use super::app; 
+use super::queries;
+use super::utils;
 
 //Menu enum
 #[derive(Copy, Clone, Debug)]
 pub enum MenuItem {
     Home,
     Boards,
-    Detail
+    Detail,
 }
 
 impl From<MenuItem> for usize {
@@ -23,7 +23,7 @@ impl From<MenuItem> for usize {
         match input {
             MenuItem::Home => 0,
             MenuItem::Boards => 1,
-            MenuItem::Detail => 2, 
+            MenuItem::Detail => 2,
         }
     }
 }
@@ -31,7 +31,6 @@ impl From<MenuItem> for usize {
 pub struct Home {}
 
 impl Home {
-
     pub fn render<'a>() -> Paragraph<'a> {
         let home = Paragraph::new(vec![
             Spans::from(vec![Span::raw("")]),
@@ -56,13 +55,12 @@ impl Home {
     }
 }
 
-pub struct BoardList;  
+pub struct BoardList;
 
 impl BoardList {
-
     pub fn render<'a>(
         board_vec: &Vec<objects::Board>,
-        board_list_state : &ListState,
+        board_list_state: &ListState,
     ) -> (List<'a>, Table<'a>) {
         let board_block = Block::default()
             .borders(Borders::ALL)
@@ -119,18 +117,18 @@ impl BoardList {
         (board_list, board_detail)
     }
 
-    pub fn keyup(app : &mut app::App) {
+    pub fn keyup(app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let amount_boards = utils::filter_boards(&app.boards, &app.search).len(); 
+            let amount_boards = utils::filter_boards(&app.boards, &app.search).len();
             if selected > 0 {
-                app.list_state.select(Some(selected - 1)); 
+                app.list_state.select(Some(selected - 1));
             } else {
                 app.list_state.select(Some(amount_boards - 1));
             }
         }
     }
 
-    pub fn keydown(app : &mut app::App) {
+    pub fn keydown(app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let list_length = utils::filter_boards(&app.boards, &app.search).len();
             if selected >= list_length - 1 {
@@ -141,28 +139,28 @@ impl BoardList {
         }
     }
 
-    pub fn keyenter(app : &mut app::App) {
-        let board_filtered = utils::filter_boards(&app.boards, &app.search); 
-        app.active_menu_item = MenuItem::Detail; 
-        let selected_board = board_filtered.get(app.list_state.selected().unwrap()).unwrap().clone(); 
-        app.items = queries::board_detail(&app.client, selected_board.id); 
-        app.search = Vec::new(); 
+    pub fn keyenter(app: &mut app::App) {
+        let board_filtered = utils::filter_boards(&app.boards, &app.search);
+        app.active_menu_item = MenuItem::Detail;
+        let selected_board = board_filtered
+            .get(app.list_state.selected().unwrap())
+            .unwrap()
+            .clone();
+        app.items = queries::board_detail(&app.client, selected_board.id);
+        app.search = Vec::new();
     }
 }
 
-pub struct BoardDetail; 
+pub struct BoardDetail;
 
 impl BoardDetail {
-    pub fn render<'a>(
-        items: &Vec<objects::Item>, 
-        list_state : &ListState, 
-    ) -> List<'a> {
+    pub fn render<'a>(items: &Vec<objects::Item>, list_state: &ListState) -> List<'a> {
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
             .title("Items")
             .border_type(BorderType::Plain);
-    
+
         let list_items: Vec<ListItem> = items
             .iter()
             .map(|x| ListItem::new(x.name.to_owned()))
@@ -175,12 +173,12 @@ impl BoardDetail {
             )
             .unwrap_or(&objects::Item {
                 name: "".to_string(),
-                group : objects::Group {
-                    title : "".to_string()
-                }
+                group: objects::Group {
+                    title: "".to_string(),
+                },
             })
             .clone();
-    
+
         let item_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()
                 .bg(Color::Yellow)
@@ -191,18 +189,18 @@ impl BoardDetail {
         item_list
     }
 
-    pub fn keyup(app : &mut app::App) {
+    pub fn keyup(app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let amount_boards = utils::filter_items(&app.items, &app.search).len();
             if selected > 0 {
-                app.list_state.select(Some(selected - 1)); 
+                app.list_state.select(Some(selected - 1));
             } else {
                 app.list_state.select(Some(amount_boards - 1));
             }
         }
     }
 
-    pub fn keydown(app : &mut app::App) {
+    pub fn keydown(app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let list_length = utils::filter_items(&app.items, &app.search).len();
             if selected >= list_length - 1 {
@@ -213,8 +211,5 @@ impl BoardDetail {
         }
     }
 
-    pub fn keyenter() {
-        
-    }
+    pub fn keyenter() {}
 }
-

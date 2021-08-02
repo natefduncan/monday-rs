@@ -41,7 +41,7 @@ pub struct Group {
 pub struct Item {
     // assets: Vec<Asset>,
     // board: Board,
-    // pub id : u32, 
+    // pub id : u32,
     // pub column_values: Vec<ColumnValue>,
     // pub created_at: Date,
     // creator: User,
@@ -60,8 +60,7 @@ pub struct ColumnValue {
     pub id: String,
     pub text: String,
     pub title: String,
-    pub type_ : String
-    // value: JSON,
+    pub type_: String, // value: JSON,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -155,7 +154,7 @@ pub enum State {
     Active,
     Archived,
     Deleted,
-    None
+    None,
 }
 
 #[derive(Debug, Clone)]

@@ -2,32 +2,28 @@ use tui::{
     layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
-    widgets::{
-        Block, BorderType, Borders, Paragraph, Tabs,
-    },
+    widgets::{Block, BorderType, Borders, Paragraph, Tabs},
 };
 
-use crossterm::{
-    event::{KeyCode, KeyModifiers},
-};
+use crossterm::event::{KeyCode, KeyModifiers};
 
+mod app;
+mod events;
 mod monday;
 mod objects;
 mod queries;
+mod utils;
 mod views;
-mod utils; 
-mod events;
-mod app;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //APP
     //Terminal
-    let mut terminal = app::start_terminal(); 
+    let mut terminal = app::start_terminal();
     //Receiver Channel
-    let rx = events::start_input_handling(); 
-    //Menu 
+    let rx = events::start_input_handling();
+    //Menu
     let menu_titles = vec!["Home", "Boards", "Quit"];
-    let mut app = app::App::new(); 
+    let mut app = app::App::new();
 
     loop {
         terminal.draw(|rect| {
@@ -90,13 +86,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
                         )
                         .split(chunks[1]);
-                    let board_filtered = utils::filter_boards(&app.boards, &app.search); 
+                    let board_filtered = utils::filter_boards(&app.boards, &app.search);
                     let (left, right) = views::BoardList::render(&board_filtered, &app.list_state);
                     rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state);
                     rect.render_widget(right, board_chunks[1]);
-                }, 
+                }
                 views::MenuItem::Detail => {
-                    let filtered = utils::filter_items(&app.items, &app.search); 
+                    let filtered = utils::filter_items(&app.items, &app.search);
                     let list_items = views::BoardDetail::render(&filtered, &app.list_state);
                     rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state);
                 }
@@ -108,7 +104,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             events::Event::Input(event) => match event.modifiers {
                 KeyModifiers::SHIFT => match event.code {
                     KeyCode::Char('Q') => {
-                        app::stop_terminal(&mut terminal); 
+                        app::stop_terminal(&mut terminal);
                         break;
                     }
                     KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home,
@@ -116,32 +112,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     _ => {}
                 },
                 _ => match event.code {
-                    KeyCode::Down => {
-                        match app.active_menu_item {
-                            views::MenuItem::Boards => views::BoardList::keydown(&mut app), 
-                            views::MenuItem::Detail => views::BoardDetail::keydown(&mut app), 
-                            _ => ()
-                        }                    }
-                    KeyCode::Up => {
-                        match app.active_menu_item {
-                            views::MenuItem::Boards => views::BoardList::keyup(&mut app), 
-                            views::MenuItem::Detail => views::BoardDetail::keyup(&mut app), 
-                            _ => ()
-                        }
-                    }
+                    KeyCode::Down => match app.active_menu_item {
+                        views::MenuItem::Boards => views::BoardList::keydown(&mut app),
+                        views::MenuItem::Detail => views::BoardDetail::keydown(&mut app),
+                        _ => (),
+                    },
+                    KeyCode::Up => match app.active_menu_item {
+                        views::MenuItem::Boards => views::BoardList::keyup(&mut app),
+                        views::MenuItem::Detail => views::BoardDetail::keyup(&mut app),
+                        _ => (),
+                    },
                     KeyCode::Backspace => {
                         app.search.pop();
-                    }, 
-                    KeyCode::Enter => { 
-                        match app.active_menu_item {
-                            views::MenuItem::Boards => views::BoardList::keyenter(&mut app), 
-                            _ => ()
-                        }
-
                     }
+                    KeyCode::Enter => match app.active_menu_item {
+                        views::MenuItem::Boards => views::BoardList::keyenter(&mut app),
+                        _ => (),
+                    },
                     KeyCode::Char(c) => {
                         app.search.push(c);
-                        app.list_state.select(Some(0)); 
+                        app.list_state.select(Some(0));
                     }
                     _ => {}
                 },
