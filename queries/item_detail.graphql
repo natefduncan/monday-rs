@@ -2,6 +2,7 @@ query ItemDetail($item_id:Int) {
     items(ids:[$item_id]) {
         name
         id
+        updated_at
         group {
             title
         }
@@ -12,7 +13,15 @@ query ItemDetail($item_id:Int) {
         } 
         updates {
             text_body
-            replies
+            replies {
+                text_body
+                updated_at
+                creator {
+                    id
+                    email
+                    name
+                }
+            }
             updated_at
             creator {
                 id
@@ -24,7 +33,7 @@ query ItemDetail($item_id:Int) {
             id 
             text
             title
-            type_
+            type
         }
     }
 }
