@@ -174,3 +174,23 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
     return output; 
 
 }
+
+//Create Update
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/create_update.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct CreateUpdate;
+
+pub fn create_update(client: &Client, item_id: String, body : String) -> String {
+    let variables = create_update::Variables {
+        item_id: Some(item_id.parse::<i64>().unwrap()),
+        body : Some(body)
+    };
+    let res: Response<create_update::ResponseData> =
+        monday::query::<CreateUpdate>(&client, variables).expect("Could not execute query.");
+    let data = res.data.expect("missing response data"); 
+    data.create_update.unwrap().id
+}

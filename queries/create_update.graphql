@@ -1,0 +1,6 @@
+
+mutation CreateUpdate($item_id:Int, $body:String) {
+    create_update (item_id: $item_id, body: $body) {
+        id
+    }
+}
