@@ -36,7 +36,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         })?;
 
         match rx.recv()? {
-            events::Event::Input(event) => match event.modifiers {
+            events::Event::Input(event) => {
+                components::event_menu_block(event, &app, &mut terminal); 
+                components::event_search_block(event, &app); 
+            }
+            
+            match event.modifiers {
+                
                 KeyModifiers::SHIFT => match event.code {
                     KeyCode::Char('Q') => {
                         app::stop_terminal(&mut terminal);

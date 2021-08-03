@@ -9,7 +9,8 @@ use tui::{
         Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
     },
 };
-
+// use crossterm::{Event as CEvent, KeyEvent, KeyCode, KeyModifiers};
+use crossterm::event::KeyEvent;
 use super::app;
 use super::components;
 use super::objects;
@@ -280,6 +281,9 @@ impl ItemList {
         .map(|x| x.to_string())
         .collect();
     }
+
+    pub fn process_input_event(&self, event : KeyEvent, app : &app::App) {
+    }
 }
 
 pub struct ItemDetail;
@@ -396,10 +400,4 @@ impl ItemDetail {
         rect.render_widget(menu_block, chunks[0]);
         rect.render_widget(p, chunks[1]);
     }
-
-    pub fn keyup(app: &mut app::App) {}
-
-    pub fn keydown(app: &mut app::App) {}
-
-    pub fn keyenter(app: &mut app::App) {}
 }
