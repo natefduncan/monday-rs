@@ -79,8 +79,8 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
         .map(|item| {
             let i = item.clone().unwrap();
             let mut item = Item::new();
-            item.id = i.id.clone(); 
-            item.name = i.name.clone(); 
+            item.id = i.id.clone();
+            item.name = i.name.clone();
             item
         })
         .collect::<Vec<Item>>();
@@ -96,7 +96,7 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
 )]
 struct ItemDetail;
 
-type Date = String; 
+type Date = String;
 
 pub fn item_detail(client: &Client, item_id: String) -> Item {
     let variables = item_detail::Variables {
@@ -109,7 +109,7 @@ pub fn item_detail(client: &Client, item_id: String) -> Item {
 
 fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item {
     let data = res.data.expect("missing response data.");
-    
+
     let item = data
         .items
         .unwrap()
@@ -119,60 +119,78 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
         .unwrap();
     let mut output = Item::new();
     output.name = item.name;
-    output.id = item.id; 
+    output.id = item.id;
     output.updated_at = item.updated_at.unwrap();
     //Group
     output.group = Group {
-        title : item.group.unwrap().title
-    }; 
+        title: item.group.unwrap().title,
+    };
     //Subscribers
-    output.subscribers = item.subscribers.iter().map(|sub| {
-        let user = sub.clone().unwrap();
-        User { 
-            id : user.id, 
-            email : user.email, 
-            name : user.name
-        }
-    }).collect::<Vec<User>>(); 
-    //Column Values
-    output.column_values = item.column_values.unwrap().iter().map(|c| {
-        let c_val = c.clone().unwrap(); 
-        ColumnValue {
-            id : c_val.id, 
-            text : c_val.text.unwrap_or(String::from("")), 
-            title : c_val.title,
-            r#type : c_val.type_,
-        }
-    }).collect::<Vec<ColumnValue>>(); 
-    //Updates
-    output.updates = item.updates.unwrap().iter().map(|u| {
-        let update = u.clone().unwrap();
-        let creator = update.creator.unwrap(); 
-        Update {
-            text_body : update.text_body.unwrap_or(String::from("")), 
-            replies : update.replies.unwrap().iter().map(|r| {
-                let reply = r.clone().unwrap();
-                let creator = reply.creator.unwrap(); 
-                Reply {
-                    text_body : reply.text_body.unwrap_or(String::from("")), 
-                    updated_at : reply.updated_at.unwrap(), 
-                    creator : User {
-                        id : creator.id, 
-                        email : creator.email, 
-                        name : creator.name
-                    }
-                }
-            }).collect::<Vec<Reply>>(), 
-            updated_at : update.updated_at.unwrap(), 
-            creator: User {
-                id : creator.id, 
-                name : creator.name, 
-                email : creator.email
+    output.subscribers = item
+        .subscribers
+        .iter()
+        .map(|sub| {
+            let user = sub.clone().unwrap();
+            User {
+                id: user.id,
+                email: user.email,
+                name: user.name,
             }
-        }
-    }).collect::<Vec<Update>>();  
-    return output; 
-
+        })
+        .collect::<Vec<User>>();
+    //Column Values
+    output.column_values = item
+        .column_values
+        .unwrap()
+        .iter()
+        .map(|c| {
+            let c_val = c.clone().unwrap();
+            ColumnValue {
+                id: c_val.id,
+                text: c_val.text.unwrap_or(String::from("")),
+                title: c_val.title,
+                r#type: c_val.type_,
+            }
+        })
+        .collect::<Vec<ColumnValue>>();
+    //Updates
+    output.updates = item
+        .updates
+        .unwrap()
+        .iter()
+        .map(|u| {
+            let update = u.clone().unwrap();
+            let creator = update.creator.unwrap();
+            Update {
+                text_body: update.text_body.unwrap_or(String::from("")),
+                replies: update
+                    .replies
+                    .unwrap()
+                    .iter()
+                    .map(|r| {
+                        let reply = r.clone().unwrap();
+                        let creator = reply.creator.unwrap();
+                        Reply {
+                            text_body: reply.text_body.unwrap_or(String::from("")),
+                            updated_at: reply.updated_at.unwrap(),
+                            creator: User {
+                                id: creator.id,
+                                email: creator.email,
+                                name: creator.name,
+                            },
+                        }
+                    })
+                    .collect::<Vec<Reply>>(),
+                updated_at: update.updated_at.unwrap(),
+                creator: User {
+                    id: creator.id,
+                    name: creator.name,
+                    email: creator.email,
+                },
+            }
+        })
+        .collect::<Vec<Update>>();
+    return output;
 }
 
 //Create Update
@@ -184,13 +202,13 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
 )]
 struct CreateUpdate;
 
-pub fn create_update(client: &Client, item_id: String, body : String) -> String {
+pub fn create_update(client: &Client, item_id: String, body: String) -> String {
     let variables = create_update::Variables {
         item_id: Some(item_id.parse::<i64>().unwrap()),
-        body : Some(body)
+        body: Some(body),
     };
     let res: Response<create_update::ResponseData> =
         monday::query::<CreateUpdate>(&client, variables).expect("Could not execute query.");
-    let data = res.data.expect("missing response data"); 
+    let data = res.data.expect("missing response data");
     data.create_update.unwrap().id
 }

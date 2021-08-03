@@ -15,11 +15,11 @@ pub struct App {
     pub list_state: ListState,
     pub boards: Vec<objects::Board>,
     pub items: Vec<objects::Item>,
-    pub item_detail : objects::Item, 
+    pub item_detail: objects::Item,
     pub active_menu_item: views::MenuItem,
     pub search: Vec<char>,
     pub client: reqwest::blocking::Client,
-    pub menu_titles : Vec<String>
+    pub menu_titles: Vec<String>,
 }
 
 impl App {
@@ -35,11 +35,14 @@ impl App {
             list_state: list_state,
             boards: boards,
             items: items,
-            item_detail : objects::Item::new(), 
+            item_detail: objects::Item::new(),
             active_menu_item: active_menu_item,
             search: search,
             client: client,
-            menu_titles : vec!["Home", "Boards", "Items", "Quit"].iter().map(|x| x.to_string()).collect::<Vec<String>>()
+            menu_titles: vec!["Home", "Boards", "Items", "Quit"]
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<Vec<String>>(),
         }
     }
 }

@@ -40,7 +40,7 @@ pub struct Group {
 impl Group {
     pub fn new() -> Group {
         Group {
-            title : "".to_string()
+            title: "".to_string(),
         }
     }
 }
@@ -49,7 +49,7 @@ impl Group {
 pub struct Item {
     // assets: Vec<Asset>,
     // board: Board,
-    pub id : String,
+    pub id: String,
     pub column_values: Vec<ColumnValue>,
     // pub created_at: Date,
     pub creator: User,
@@ -65,14 +65,14 @@ pub struct Item {
 impl Item {
     pub fn new() -> Item {
         Item {
-            id : String::from(""), 
-            column_values : Vec::new(), 
-            creator : User::new(), 
-            group : Group::new(),
-            name : "".to_string(), 
-            subscribers : Vec::new(), 
-            updated_at : String::from(""), 
-            updates : Vec::new()
+            id: String::from(""),
+            column_values: Vec::new(),
+            creator: User::new(),
+            group: Group::new(),
+            name: "".to_string(),
+            subscribers: Vec::new(),
+            updated_at: String::from(""),
+            updates: Vec::new(),
         }
     }
 }
@@ -88,14 +88,12 @@ pub struct ColumnValue {
 
 #[derive(Debug, Clone)]
 pub struct Date {
-    pub dt : String
+    pub dt: String,
 }
 
 impl Date {
     pub fn new() -> Date {
-        Date {
-            dt : "".to_string()
-        }
+        Date { dt: "".to_string() }
     }
 }
 
@@ -176,9 +174,9 @@ pub struct User {
 impl User {
     pub fn new() -> User {
         User {
-            email : "".to_string(), 
-            id : 0, 
-            name : "".to_string()
+            email: "".to_string(),
+            id: 0,
+            name: "".to_string(),
         }
     }
 }

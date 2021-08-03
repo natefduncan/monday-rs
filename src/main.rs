@@ -1,23 +1,22 @@
+use crossterm::event::{KeyCode, KeyModifiers};
+use std::io;
 use tui::{
+    backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
+    terminal::Frame,
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
-    terminal::{Frame}, 
-    backend::{CrosstermBackend}
 };
-use std::io; 
-use crossterm::event::{KeyCode, KeyModifiers};
 
 mod app;
+mod components;
 mod events;
 mod monday;
 mod objects;
 mod queries;
 mod utils;
 mod views;
-mod components; 
-
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //APP
@@ -29,37 +28,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut app = app::App::new();
 
     loop {
-        terminal.draw(|rect| {
-            let chunks = components::get_default_chunks(&rect); 
-            let search_block = components::get_search_block(&app); 
-            let menu_block = components::get_menu_block(&app); 
-
-            rect.render_widget(menu_block, chunks[0]);
-            match app.active_menu_item {
-                views::MenuItem::Home => rect.render_widget(views::Home::render(), chunks[1]),
-                views::MenuItem::Boards => {
-                    let board_chunks = Layout::default()
-                        .direction(Direction::Horizontal)
-                        .constraints(
-                            [Constraint::Percentage(40), Constraint::Percentage(60)].as_ref(),
-                        )
-                        .split(chunks[1]);
-                    let board_filtered = utils::filter_boards(&app.boards, &app.search);
-                    let (left, right) = views::BoardList::render(&board_filtered, &app.list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state.clone());
-                    rect.render_widget(right, board_chunks[1]);
-                }
-                views::MenuItem::Items => {
-                    let filtered = utils::filter_items(&app.items, &app.search);
-                    let list_items = views::ItemList::render(&filtered, &app.list_state);
-                    rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state.clone());
-                }, 
-                views::MenuItem::ItemDetail => {
-                    let detail = views::ItemDetail::render(&app.item_detail); 
-                    rect.render_widget(detail, chunks[1]); 
-                }
-            }
-            rect.render_widget(search_block, chunks[2]);
+        terminal.draw(|mut rect| match app.active_menu_item {
+            views::MenuItem::Home => views::Home::render(&mut rect, &app),
+            views::MenuItem::Boards => views::BoardList::render(&mut rect, &app),
+            views::MenuItem::Items => views::ItemList::render(&mut rect, &app),
+            views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
         })?;
 
         match rx.recv()? {
@@ -90,7 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     KeyCode::Enter => match app.active_menu_item {
                         views::MenuItem::Boards => views::BoardList::keyenter(&mut app),
-                        views::MenuItem::Items => views::ItemList::keyenter(&mut app), 
+                        views::MenuItem::Items => views::ItemList::keyenter(&mut app),
                         _ => (),
                     },
                     KeyCode::Char(c) => {

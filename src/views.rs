@@ -1,11 +1,17 @@
+use std::io;
 use tui::{
-    layout::{Alignment, Constraint},
+    backend::CrosstermBackend,
+    layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
+    terminal::Frame,
     text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap},
+    widgets::{
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
+    },
 };
 
 use super::app;
+use super::components;
 use super::objects;
 use super::queries;
 use super::utils;
@@ -16,7 +22,7 @@ pub enum MenuItem {
     Home,
     Boards,
     Items,
-    ItemDetail
+    ItemDetail,
 }
 
 impl From<MenuItem> for usize {
@@ -25,7 +31,7 @@ impl From<MenuItem> for usize {
             MenuItem::Home => 0,
             MenuItem::Boards => 1,
             MenuItem::Items => 2,
-            MenuItem::ItemDetail => 3
+            MenuItem::ItemDetail => 3,
         }
     }
 }
@@ -33,8 +39,14 @@ impl From<MenuItem> for usize {
 pub struct Home {}
 
 impl Home {
-    pub fn render<'a>() -> Paragraph<'a> {
-        let home = Paragraph::new(vec![
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+        let search_block = components::get_search_block(&app);
+        let menu_block = components::get_menu_block(&app);
+
+        //Home paragraph
+        let home_block = Paragraph::new(vec![
             Spans::from(vec![Span::raw("")]),
             Spans::from(vec![Span::raw("Welcome")]),
             Spans::from(vec![Span::raw("")]),
@@ -53,30 +65,47 @@ impl Home {
                 .title("Home")
                 .border_type(BorderType::Plain),
         );
-        home
+
+        //Render components
+        rect.render_widget(menu_block, chunks[0]);
+        rect.render_widget(home_block, chunks[1]);
+        rect.render_widget(search_block, chunks[2]);
     }
 }
 
 pub struct BoardList;
 
 impl BoardList {
-    pub fn render<'a>(
-        board_vec: &Vec<objects::Board>,
-        board_list_state: &ListState,
-    ) -> (List<'a>, Table<'a>) {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+        let search_block = components::get_search_block(&app);
+        let menu_block = components::get_menu_block(&app);
+
+        //Board chunks
+        let board_chunks = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([Constraint::Percentage(40), Constraint::Percentage(60)].as_ref())
+            .split(chunks[1]);
+
+        //Board block
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
             .title("Boards")
             .border_type(BorderType::Plain);
 
-        let list_items: Vec<ListItem> = board_vec
+        //Create list items
+        let list_items: Vec<ListItem> = app
+            .boards
             .iter()
             .map(|x| ListItem::new(x.name.to_owned()))
             .collect();
-        let selected_board = board_vec
+
+        let selected_board = app
+            .boards
             .get(
-                board_list_state
+                app.list_state
                     .selected()
                     .expect("there is always a selected board"),
             )
@@ -86,6 +115,7 @@ impl BoardList {
             })
             .clone();
 
+        //Create list component
         let board_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()
                 .bg(Color::Yellow)
@@ -93,6 +123,7 @@ impl BoardList {
                 .add_modifier(Modifier::BOLD),
         );
 
+        //Board Detail Table
         let board_detail = Table::new(vec![Row::new(vec![
             Cell::from(Span::raw(selected_board.id.to_string())),
             Cell::from(Span::raw(selected_board.name)),
@@ -116,7 +147,11 @@ impl BoardList {
         )
         .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]);
 
-        (board_list, board_detail)
+        //Render components
+        rect.render_widget(menu_block, chunks[0]);
+        rect.render_stateful_widget(board_list, board_chunks[0], &mut app.list_state.clone());
+        rect.render_widget(board_detail, board_chunks[1]);
+        rect.render_widget(search_block, chunks[2]);
     }
 
     pub fn keyup(app: &mut app::App) {
@@ -150,34 +185,43 @@ impl BoardList {
             .clone();
         app.items = queries::item_list(&app.client, selected_board.id);
         app.search = Vec::new();
-        app.menu_titles = vec!["Home", "Boards", "Items", "Add Item", "Quit"].iter().map(|x| x.to_string()).collect::<Vec<String>>();
+        app.menu_titles = vec!["Home", "Boards", "Items", "Add Item", "Quit"]
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>();
     }
 }
 
 pub struct ItemList;
 
 impl ItemList {
-    pub fn render<'a>(items: &Vec<objects::Item>, list_state: &ListState) -> List<'a> {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+        let search_block = components::get_search_block(&app);
+        let menu_block = components::get_menu_block(&app);
+
+        //Filter items
+        let filtered = utils::filter_items(&app.items, &app.search);
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
             .title("Item")
             .border_type(BorderType::Plain);
-            
 
-        let list_items: Vec<ListItem> = items
+        //Create item list
+        let list_items: Vec<ListItem> = filtered
             .iter()
             .map(|x| ListItem::new(x.name.to_owned()))
             .collect();
-        let selected_item = items
+        let selected_item = filtered
             .get(
-                list_state
+                app.list_state
                     .selected()
                     .expect("there is always a selected group"),
             )
             .unwrap_or(&objects::Item::new())
             .clone();
-
 
         let item_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()
@@ -186,7 +230,10 @@ impl ItemList {
                 .add_modifier(Modifier::BOLD),
         );
 
-        item_list
+        //Render components
+        rect.render_widget(menu_block, chunks[0]);
+        rect.render_stateful_widget(item_list, chunks[1], &mut app.list_state.clone());
+        rect.render_widget(search_block, chunks[2]);
     }
 
     pub fn keyup(app: &mut app::App) {
@@ -211,7 +258,7 @@ impl ItemList {
         }
     }
 
-    pub fn keyenter(app : &mut app::App) {
+    pub fn keyenter(app: &mut app::App) {
         let item_filtered = utils::filter_items(&app.items, &app.search);
         app.active_menu_item = MenuItem::ItemDetail;
         let selected_item = item_filtered
@@ -219,77 +266,139 @@ impl ItemList {
             .unwrap()
             .clone();
         app.item_detail = queries::item_detail(&app.client, selected_item.id);
-        app.search = Vec::new();     
-        app.menu_titles = vec!["Home", "Boards", "Items", "Add Comment", "Change Status", "Quit"].iter().map(|x| x.to_string()).collect();   
-
+        app.search = Vec::new();
+        app.menu_titles = vec![
+            "Home",
+            "Boards",
+            "Items",
+            "Add Comment",
+            "Change Status",
+            "Quit",
+        ]
+        .iter()
+        .map(|x| x.to_string())
+        .collect();
     }
 }
 
 pub struct ItemDetail;
 
 impl ItemDetail {
-    pub fn render<'a>(item: &objects::Item) -> Paragraph<'a> {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+        let menu_block = components::get_menu_block(&app);
+
+        //Board detail block
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
             .title("Item")
             .border_type(BorderType::Plain);
 
-        let mut column_value_span : Vec<Span> = vec![
-            Span::styled("Column Values: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
-        ];
-        for cv in item.column_values.iter() {
+        //Span Vec
+        let mut column_value_span: Vec<Span> = vec![Span::styled(
+            "Column Values: ",
+            Style::default()
+                .add_modifier(Modifier::ITALIC)
+                .fg(Color::LightBlue),
+        )];
+        for cv in app.item_detail.column_values.iter() {
             if cv.text != "" {
                 column_value_span.append(&mut vec![
-                    Span::styled(cv.title.clone(), Style::default().add_modifier(Modifier::BOLD).fg(Color::LightCyan)),
+                    Span::styled(
+                        cv.title.clone(),
+                        Style::default()
+                            .add_modifier(Modifier::BOLD)
+                            .fg(Color::LightCyan),
+                    ),
                     Span::raw(": "),
-                    Span::styled(cv.text.clone(), Style::default().add_modifier(Modifier::ITALIC)), 
-                    Span::raw(" | "), 
+                    Span::styled(
+                        cv.text.clone(),
+                        Style::default().add_modifier(Modifier::ITALIC),
+                    ),
+                    Span::raw(" | "),
                 ])
             }
-        };
+        }
         let text = vec![
             Spans::from(vec![
-                Span::styled("Name: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
-                Span::raw(item.name.clone()), 
-            ]), 
-            Spans::from(vec![
-                Span::styled("Subscribers: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)),
-                Span::raw(item.subscribers.iter().map(|sub| sub.name.clone()).collect::<Vec<String>>().join(", ")), 
+                Span::styled(
+                    "Name: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(app.item_detail.name.clone()),
             ]),
             Spans::from(vec![
-                Span::styled("Updated at: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
-                Span::raw(item.updated_at.clone())
-            ]), 
-            Spans::from(vec![
-                Span::styled("Group: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
-                Span::raw(item.group.title.clone())
+                Span::styled(
+                    "Subscribers: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(
+                    app.item_detail
+                        .subscribers
+                        .iter()
+                        .map(|sub| sub.name.clone())
+                        .collect::<Vec<String>>()
+                        .join(", "),
+                ),
             ]),
             Spans::from(vec![
-                Span::styled("Updates: ", Style::default().add_modifier(Modifier::ITALIC).fg(Color::LightBlue)), 
-                Span::raw(item.updates.iter().map(|update| {
-                    update.text_body.clone()
-                }).collect::<Vec<String>>().join(" | "))
-            ]), 
+                Span::styled(
+                    "Updated at: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(app.item_detail.updated_at.clone()),
+            ]),
+            Spans::from(vec![
+                Span::styled(
+                    "Group: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(app.item_detail.group.title.clone()),
+            ]),
+            Spans::from(vec![
+                Span::styled(
+                    "Updates: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(
+                    app.item_detail
+                        .updates
+                        .iter()
+                        .map(|update| update.text_body.clone())
+                        .collect::<Vec<String>>()
+                        .join(" | "),
+                ),
+            ]),
             Spans::from(column_value_span),
-        ]; 
+        ];
+
+        //Paragraph
         let p = Paragraph::new(text)
             .block(board_block)
             .style(Style::default().fg(Color::White).bg(Color::Black))
             .alignment(Alignment::Left)
-            .wrap(Wrap {trim : true});
-        p
+            .wrap(Wrap { trim: true });
+
+        //Render Components
+        rect.render_widget(menu_block, chunks[0]);
+        rect.render_widget(p, chunks[1]);
     }
 
-    pub fn keyup(app: &mut app::App) {
+    pub fn keyup(app: &mut app::App) {}
 
-    }
+    pub fn keydown(app: &mut app::App) {}
 
-    pub fn keydown(app: &mut app::App) {
-
-    }
-
-    pub fn keyenter(app : &mut app::App) {
-
-    }
+    pub fn keyenter(app: &mut app::App) {}
 }
