@@ -82,6 +82,9 @@ impl BoardList {
         let search_block = components::get_search_block(&app);
         let menu_block = components::get_menu_block(&app);
 
+        //Filter boards
+        let filtered = utils::filter_boards(&app.boards, &app.search); 
+        
         //Board chunks
         let board_chunks = Layout::default()
             .direction(Direction::Horizontal)
@@ -96,14 +99,12 @@ impl BoardList {
             .border_type(BorderType::Plain);
 
         //Create list items
-        let list_items: Vec<ListItem> = app
-            .boards
+        let list_items: Vec<ListItem> = filtered
             .iter()
             .map(|x| ListItem::new(x.name.to_owned()))
             .collect();
 
-        let selected_board = app
-            .boards
+        let selected_board = filtered
             .get(
                 app.list_state
                     .selected()
