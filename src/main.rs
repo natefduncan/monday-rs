@@ -1,10 +1,12 @@
 use tui::{
-    layout::{Alignment, Constraint, Direction, Layout},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
+    terminal::{Frame}, 
+    backend::{CrosstermBackend}
 };
-
+use std::io; 
 use crossterm::event::{KeyCode, KeyModifiers};
 
 mod app;
@@ -15,44 +17,39 @@ mod queries;
 mod utils;
 mod views;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    //APP
-    //Terminal
-    let mut terminal = app::start_terminal();
-    //Receiver Channel
-    let rx = events::start_input_handling();
-    //Menu
-    let mut app = app::App::new();
+fn get_default_chunks(rect : &Frame<CrosstermBackend<io::Stdout>>) -> Vec<Rect> {
+    let size = rect.size(); 
+    let chunks = Layout::default()
+    .direction(Direction::Vertical)
+    .margin(2)
+    .constraints(
+        [
+            Constraint::Length(3),
+            Constraint::Min(2),
+            Constraint::Length(3),
+        ]
+        .as_ref(),
+    )
+    .split(size);
+    return chunks; 
+}
 
-    loop {
-        terminal.draw(|rect| {
-            let size = rect.size();
-            let chunks = Layout::default()
-                .direction(Direction::Vertical)
-                .margin(2)
-                .constraints(
-                    [
-                        Constraint::Length(3),
-                        Constraint::Min(2),
-                        Constraint::Length(3),
-                    ]
-                    .as_ref(),
-                )
-                .split(size);
+fn get_search_block(app : &app::App) -> Paragraph {
+    let search_text: String = app.search.iter().map(|x| x.to_string()).collect::<String>();
+    return Paragraph::new(search_text)
+        .style(Style::default().fg(Color::LightCyan))
+        .alignment(Alignment::Center)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title("Search")
+                .border_type(BorderType::Plain),
+        ); 
+}
 
-            let search_text: String = app.search.iter().map(|x| x.to_string()).collect::<String>();
-            let search_block = Paragraph::new(search_text)
-                .style(Style::default().fg(Color::LightCyan))
-                .alignment(Alignment::Center)
-                .block(
-                    Block::default()
-                        .borders(Borders::ALL)
-                        .style(Style::default().fg(Color::White))
-                        .title("Search")
-                        .border_type(BorderType::Plain),
-                );
-
-            let menu = app.menu_titles
+fn get_menu_block(app : &app::App) -> Tabs {
+    let menu = app.menu_titles
                 .iter()
                 .map(|t| {
                     let (first, rest) = t.split_at(1);
@@ -68,14 +65,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 })
                 .collect();
 
-            let tabs = Tabs::new(menu)
-                .select(app.active_menu_item.into())
-                .block(Block::default().title("Menu").borders(Borders::ALL))
-                .style(Style::default().fg(Color::White))
-                .highlight_style(Style::default().fg(Color::Yellow))
-                .divider(Span::raw("|"));
+    let tabs = Tabs::new(menu)
+        .select(app.active_menu_item.into())
+        .block(Block::default().title("Menu").borders(Borders::ALL))
+        .style(Style::default().fg(Color::White))
+        .highlight_style(Style::default().fg(Color::Yellow))
+        .divider(Span::raw("|"));
+    return tabs; 
+}
 
-            rect.render_widget(tabs, chunks[0]);
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    //APP
+    //Terminal
+    let mut terminal = app::start_terminal();
+    //Receiver Channel
+    let rx = events::start_input_handling();
+    //Menu
+    let mut app = app::App::new();
+
+    loop {
+        terminal.draw(|rect| {
+            let chunks = get_default_chunks(&rect); 
+            let search_block = get_search_block(&app); 
+            let menu_block = get_menu_block(&app); 
+
+            rect.render_widget(menu_block, chunks[0]);
             match app.active_menu_item {
                 views::MenuItem::Home => rect.render_widget(views::Home::render(), chunks[1]),
                 views::MenuItem::Boards => {
@@ -87,13 +101,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .split(chunks[1]);
                     let board_filtered = utils::filter_boards(&app.boards, &app.search);
                     let (left, right) = views::BoardList::render(&board_filtered, &app.list_state);
-                    rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state);
+                    rect.render_stateful_widget(left, board_chunks[0], &mut app.list_state.clone());
                     rect.render_widget(right, board_chunks[1]);
                 }
                 views::MenuItem::Items => {
                     let filtered = utils::filter_items(&app.items, &app.search);
                     let list_items = views::ItemList::render(&filtered, &app.list_state);
-                    rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state);
+                    rect.render_stateful_widget(list_items, chunks[1], &mut app.list_state.clone());
                 }, 
                 views::MenuItem::ItemDetail => {
                     let detail = views::ItemDetail::render(&app.item_detail); 

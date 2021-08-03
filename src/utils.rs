@@ -28,7 +28,7 @@ fn filter_by_matches<T: Clone + std::fmt::Debug>(
     filter_vec: &Vec<T>,
     match_vec: &Vec<usize>,
 ) -> Vec<T> {
-    let mut output: Vec<T> = Vec::new();
+    let output: Vec<T> = Vec::new();
     let zip = filter_vec.iter().zip(match_vec.iter());
     let mut matches: Vec<Match<T>> = zip
         .map(|(x, m)| Match {

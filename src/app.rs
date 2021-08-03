@@ -27,10 +27,10 @@ impl App {
         let mut active_menu_item = views::MenuItem::Boards;
         let mut list_state = ListState::default();
         list_state.select(Some(0));
-        let mut search: Vec<char> = Vec::new();
+        let search: Vec<char> = Vec::new();
         let client = monday::get_client().expect("Could not get client.");
-        let mut boards: Vec<objects::Board> = queries::board_list(&client);
-        let mut items: Vec<objects::Item> = Vec::new();
+        let boards: Vec<objects::Board> = queries::board_list(&client);
+        let items: Vec<objects::Item> = Vec::new();
         App {
             list_state: list_state,
             boards: boards,
