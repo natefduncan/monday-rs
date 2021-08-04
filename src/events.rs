@@ -1,14 +1,11 @@
-use crossterm::event::{self, Event as CEvent, KeyEvent, KeyCode, KeyModifiers};
+use super::app;
+use super::views;
+use crossterm::event::{self, Event as CEvent, KeyCode, KeyEvent, KeyModifiers};
+use std::io;
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tui::{
-    Terminal, 
-    backend::CrosstermBackend
-}; 
-use std::io; 
-use super::app; 
-use super::views; 
+use tui::{backend::CrosstermBackend, Terminal};
 
 //Event loop enum
 pub enum Event<I> {
@@ -41,10 +38,13 @@ pub fn start_input_handling() -> mpsc::Receiver<Event<KeyEvent>> {
     return rx;
 }
 
-pub fn handle_key_input(event : KeyEvent, app : &mut app::App) {
+pub fn handle_key_input(event: KeyEvent, app: &mut app::App) {
     match event.code {
         KeyCode::Char(c) => app.key_input.push(c),
-        KeyCode::Backspace => { app.key_input.pop(); ()}
+        KeyCode::Backspace => {
+            app.key_input.pop();
+            ()
+        }
         _ => {}
     }
 }

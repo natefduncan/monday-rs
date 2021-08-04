@@ -1,3 +1,9 @@
+use super::app;
+use super::components;
+use super::objects;
+use super::queries;
+use super::utils;
+use crossterm::event::{KeyCode, KeyEvent};
 use std::io;
 use tui::{
     backend::CrosstermBackend,
@@ -9,12 +15,6 @@ use tui::{
         Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
     },
 };
-use crossterm::event::{KeyCode, KeyEvent};
-use super::app;
-use super::components;
-use super::objects;
-use super::queries;
-use super::utils;
 
 //Menu enum
 #[derive(Copy, Clone, Debug)]
@@ -37,7 +37,7 @@ impl From<MenuItem> for usize {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct Home; 
+pub struct Home;
 
 impl Home {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
@@ -71,23 +71,21 @@ impl Home {
         rect.render_widget(home_block, chunks[1]);
     }
 
-
     pub fn keyright(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Boards; 
+        app.active_menu_item = MenuItem::Boards;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::ItemDetail; 
+        app.active_menu_item = MenuItem::ItemDetail;
     }
 
-    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
-            KeyCode::Left => self.keyleft(app), 
-            KeyCode::Right => self.keyright(app), 
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
             _ => {}
         }
     }
-
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -101,8 +99,8 @@ impl BoardList {
         let menu_block = components::get_menu_block(&app);
 
         //Filter boards
-        let filtered = utils::filter_boards(&app.boards, &app.key_input); 
-        
+        let filtered = utils::filter_boards(&app.boards, &app.key_input);
+
         //Board chunks
         let board_chunks = Layout::default()
             .direction(Direction::Horizontal)
@@ -196,11 +194,11 @@ impl BoardList {
     }
 
     pub fn keyright(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Items; 
+        app.active_menu_item = MenuItem::Items;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Home; 
+        app.active_menu_item = MenuItem::Home;
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -215,13 +213,13 @@ impl BoardList {
         app.list_state.select(Some(0));
     }
 
-    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
-            KeyCode::Up => self.keyup(app), 
-            KeyCode::Down => self.keydown(app), 
-            KeyCode::Left => self.keyleft(app), 
-            KeyCode::Right => self.keyright(app), 
-            KeyCode::Enter => self.keyenter(app), 
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => self.keyenter(app),
             _ => {}
         }
     }
@@ -295,11 +293,11 @@ impl ItemList {
     }
 
     pub fn keyright(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::ItemDetail; 
+        app.active_menu_item = MenuItem::ItemDetail;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Boards; 
+        app.active_menu_item = MenuItem::Boards;
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -314,13 +312,13 @@ impl ItemList {
         app.list_state.select(Some(0));
     }
 
-    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
-            KeyCode::Up => self.keyup(app), 
-            KeyCode::Down => self.keydown(app), 
-            KeyCode::Left => self.keyleft(app), 
-            KeyCode::Right => self.keyright(app), 
-            KeyCode::Enter => self.keyenter(app), 
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => self.keyenter(app),
             _ => {}
         }
     }
@@ -443,19 +441,18 @@ impl ItemDetail {
     }
 
     pub fn keyright(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Home; 
+        app.active_menu_item = MenuItem::Home;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Items; 
+        app.active_menu_item = MenuItem::Items;
     }
 
-    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
-            KeyCode::Left => self.keyleft(app), 
-            KeyCode::Right => self.keyright(app), 
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
             _ => {}
         }
     }
-
 }

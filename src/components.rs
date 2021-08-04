@@ -1,7 +1,7 @@
 use super::app;
 use std::io;
 use tui::{
-    backend::{CrosstermBackend},
+    backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     terminal::Frame,
@@ -27,7 +27,11 @@ pub fn get_default_chunks(rect: &Frame<CrosstermBackend<io::Stdout>>) -> Vec<Rec
 }
 
 pub fn get_search_block(app: &app::App) -> Paragraph {
-    let search_text: String = app.key_input.iter().map(|x| x.to_string()).collect::<String>();
+    let search_text: String = app
+        .key_input
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<String>();
     return Paragraph::new(search_text)
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Center)
@@ -66,5 +70,3 @@ pub fn get_menu_block(app: &app::App) -> Tabs {
         .divider(Span::raw("|"));
     return tabs;
 }
-
-

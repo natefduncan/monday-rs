@@ -17,7 +17,7 @@ pub struct App {
     pub items: Vec<objects::Item>,
     pub item_detail: objects::Item,
     pub active_menu_item: views::MenuItem,
-    pub key_input : Vec<char>,
+    pub key_input: Vec<char>,
     pub client: reqwest::blocking::Client,
     pub menu_titles: Vec<String>,
 }
@@ -37,7 +37,7 @@ impl App {
             items: items,
             item_detail: objects::Item::new(),
             active_menu_item: active_menu_item,
-            key_input : key_input,
+            key_input: key_input,
             client: client,
             menu_titles: vec!["Home", "Boards", "Items", "Item Detail"]
                 .iter()
@@ -59,6 +59,6 @@ pub fn start_terminal() -> Terminal<CrosstermBackend<io::Stdout>> {
 
 pub fn stop_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) {
     disable_raw_mode().expect("stop raw mode");
-    terminal.clear().unwrap(); 
+    terminal.clear().unwrap();
     terminal.show_cursor().expect("show cursor");
 }

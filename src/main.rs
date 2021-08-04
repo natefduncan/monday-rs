@@ -40,22 +40,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             events::Event::Input(event) => {
                 //Quit
                 if event.code == KeyCode::Esc {
-                    app::stop_terminal(&mut terminal); 
-                    break
+                    app::stop_terminal(&mut terminal);
+                    break;
                 }
 
                 // Key Input
-                events::handle_key_input(event, &mut app); 
+                events::handle_key_input(event, &mut app);
 
                 //View events
                 match app.active_menu_item {
-                    views::MenuItem::Home => views::Home.process_input_event(event, &mut app), 
-                    views::MenuItem::Boards => views::BoardList.process_input_event(event, &mut app),
-                    views::MenuItem::Items => views::ItemList.process_input_event(event, &mut app), 
-                    views::MenuItem::ItemDetail => views::ItemDetail.process_input_event(event, &mut app), 
+                    views::MenuItem::Home => views::Home.process_input_event(event, &mut app),
+                    views::MenuItem::Boards => {
+                        views::BoardList.process_input_event(event, &mut app)
+                    }
+                    views::MenuItem::Items => views::ItemList.process_input_event(event, &mut app),
+                    views::MenuItem::ItemDetail => {
+                        views::ItemDetail.process_input_event(event, &mut app)
+                    }
                     _ => {}
                 }
-            }, 
+            }
             events::Event::Tick => {}
         }
     }
