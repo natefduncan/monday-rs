@@ -219,3 +219,55 @@ pub fn create_update(client: &Client, item_id: String, body: String) -> String {
     let data = res.data.expect("missing response data");
     data.create_update.unwrap().id
 }
+
+//Get Column
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/board_columns.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct BoardColumns;
+
+pub fn board_columns(client: &Client, board_id: String) -> Vec<Label> {
+    let variables = board_columns::Variables {
+        board_id: Some(board_id.parse::<i64>().unwrap()),
+    };
+    let res: Response<board_columns::ResponseData> =
+        monday::query::<BoardColumns>(&client, variables).expect("Could not execute query.");
+    parse_board_columns(res)
+}
+
+fn parse_board_columns(res: Response<board_columns::ResponseData>) -> Vec<Label> {
+    let data = res.data.expect("missing response data");
+    let labels : Vec<Label> = Vec::new(); 
+    let board = data
+        .boards
+        .unwrap()
+        .into_iter()
+        .nth(0)
+        .expect("missing first value")
+        .unwrap();
+    board.columns.iter().map(|col| {
+        let column = col.clone().unwrap(); 
+        let setting : serde_json::Value = serde_json::from_str(column.settings_str).unwrap();
+        match setting.get("labels") {
+            Some(v) => {
+                let mut counter = 0;
+                loop {
+                    match v.get(counter.to_string()) {
+                        Some(label) => {
+                            labels.push(Label {
+                                column_id : column.id.clone(),
+                                name : label
+                            }); 
+                        }, 
+                        None => break
+                    }
+                }
+            }, 
+            None => {}
+        }; 
+    }); 
+    labels
+}

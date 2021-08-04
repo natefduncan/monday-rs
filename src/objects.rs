@@ -16,14 +16,20 @@
 //     Share,
 // }
 
+// #[derive(Debug, Clone)]
+// pub struct Column {
+    // archived: bool,
+    // id: String,
+    // pos: String,
+    // settings_str: String,
+    // title: String,
+    // width: u32,
+// }
+
 #[derive(Debug, Clone)]
-pub struct Column {
-    archived: bool,
-    id: String,
-    pos: String,
-    settings_str: String,
-    title: String,
-    width: u32,
+pub struct Label {
+    column_id : String,
+    name : String, 
 }
 
 #[derive(Debug, Clone)]

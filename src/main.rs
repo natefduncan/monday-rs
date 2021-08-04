@@ -10,7 +10,12 @@ pub mod queries;
 pub mod utils;
 pub mod views;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
+    let app = app::App::new();
+    queries::board_columns(&app.client, String::from("1393475156")); 
+}
+
+fn main2() -> Result<(), Box<dyn std::error::Error>> {
     //Terminal
     let mut terminal = app::start_terminal();
     //Receiver Channel
@@ -27,7 +32,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
             views::MenuItem::ItemOptions => views::ItemOptions::render(&mut rect, &mut app),
             views::MenuItem::ItemUpdate => views::ItemUpdate::render(&mut rect, &mut app),
-            views::MenuItem::ColumnOptions => views::ColumnOptions::render(&mut rect, &mut app)
+            views::MenuItem::ColumnOptions => views::ColumnOptions::render(&mut rect, &mut app),
+            views::MenuItem::StatusOptions => views::StatusOptions::render(&mut rect, &mut app)
         })?;
 
         //Deal with input
@@ -60,6 +66,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }, 
                     views::MenuItem::ColumnOptions => {
                         views::ColumnOptions.process_input_event(event, &mut app)
+                    }, 
+                    views::MenuItem::StatusOptions => {
+                        views::StatusOptions.process_input_event(event, &mut app)
                     }
                 }
             }

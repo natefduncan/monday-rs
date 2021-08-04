@@ -1,0 +1,8 @@
+query BoardColumns($board_id:Int) {
+    boards(ids:[$board_id]) {
+        columns {
+            id
+            settings_str
+        }
+    }
+}
