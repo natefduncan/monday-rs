@@ -79,7 +79,7 @@ impl Item {
 
 #[derive(Debug, Clone)]
 pub struct ColumnValue {
-    // additional_info: JSON,
+    pub additional_info: String,
     pub id: String,
     pub text: String,
     pub title: String,
