@@ -1,15 +1,17 @@
 use super::app;
 use std::io;
 use tui::{
-    backend::CrosstermBackend,
+    backend::{CrosstermBackend},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     terminal::Frame,
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
+    Terminal
 };
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers}; 
+use super::views; 
 
 pub fn get_default_chunks(rect: &Frame<CrosstermBackend<io::Stdout>>) -> Vec<Rect> {
     let size = rect.size();
@@ -76,17 +78,21 @@ pub fn get_menu_block(app: &app::App) -> Tabs {
     return tabs;
 }
 
-pub fn event_menu_block(event : KeyEvent, app : &app::App, terminal : &mut terminal) {
+pub fn event_menu_block(event : KeyEvent, app : &mut app::App, terminal : &mut Terminal<CrosstermBackend<io::Stdout>>) {
     match event.modifiers {
-        match event.code {
-            KeyCode::Char("H") => app.active_menu_item = views::MenuItem::Home, 
-            KeyCode::Char("B") => app.active_menu_item = views::MenuItem::Boards, 
-            KeyCode::Char("I") => app.active_menu_item = views::MenuItem::Items, 
-            KeyCode::Char("Q") => {
-                app::stop_terminal(&mut terminal);
-                break;
-            }, 
-            _ => {}
-        }
+        KeyModifiers::SHIFT => {
+            match event.code {
+                KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home, 
+                KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards, 
+                KeyCode::Char('I') => app.active_menu_item = views::MenuItem::Items, 
+                KeyCode::Char('Q') => {
+                    app::stop_terminal(terminal);
+                }, 
+                _ => {}
+            }
+        }, 
+        _ => {}
+            
+        
     }
 }

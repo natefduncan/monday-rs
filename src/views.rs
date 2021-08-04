@@ -9,8 +9,7 @@ use tui::{
         Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
     },
 };
-// use crossterm::{Event as CEvent, KeyEvent, KeyCode, KeyModifiers};
-use crossterm::event::KeyEvent;
+use crossterm::event::{KeyCode, KeyEvent};
 use super::app;
 use super::components;
 use super::objects;
@@ -37,7 +36,8 @@ impl From<MenuItem> for usize {
     }
 }
 
-pub struct Home {}
+#[derive(Debug, Copy, Clone)]
+pub struct Home; 
 
 impl Home {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
@@ -74,6 +74,7 @@ impl Home {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct BoardList;
 
 impl BoardList {
@@ -156,7 +157,7 @@ impl BoardList {
         rect.render_widget(search_block, chunks[2]);
     }
 
-    pub fn keyup(app: &mut app::App) {
+    pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let amount_boards = utils::filter_boards(&app.boards, &app.search).len();
             if selected > 0 {
@@ -167,7 +168,7 @@ impl BoardList {
         }
     }
 
-    pub fn keydown(app: &mut app::App) {
+    pub fn keydown(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let list_length = utils::filter_boards(&app.boards, &app.search).len();
             if selected >= list_length - 1 {
@@ -178,7 +179,7 @@ impl BoardList {
         }
     }
 
-    pub fn keyenter(app: &mut app::App) {
+    pub fn keyenter(self, app: &mut app::App) {
         let board_filtered = utils::filter_boards(&app.boards, &app.search);
         app.active_menu_item = MenuItem::Items;
         let selected_board = board_filtered
@@ -192,8 +193,19 @@ impl BoardList {
             .map(|x| x.to_string())
             .collect::<Vec<String>>();
     }
+
+    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+        match event.code {
+            KeyCode::Up => self.keyup(app), 
+            KeyCode::Down => self.keydown(app), 
+            KeyCode::Enter => self.keyenter(app), 
+            KeyCode::Backspace => { app.search.pop().unwrap(); () }, 
+            _ => {}
+        }
+    }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct ItemList;
 
 impl ItemList {
@@ -238,7 +250,7 @@ impl ItemList {
         rect.render_widget(search_block, chunks[2]);
     }
 
-    pub fn keyup(app: &mut app::App) {
+    pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let amount_boards = utils::filter_items(&app.items, &app.search).len();
             if selected > 0 {
@@ -249,7 +261,7 @@ impl ItemList {
         }
     }
 
-    pub fn keydown(app: &mut app::App) {
+    pub fn keydown(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
             let list_length = utils::filter_items(&app.items, &app.search).len();
             if selected >= list_length - 1 {
@@ -260,7 +272,7 @@ impl ItemList {
         }
     }
 
-    pub fn keyenter(app: &mut app::App) {
+    pub fn keyenter(self, app: &mut app::App) {
         let item_filtered = utils::filter_items(&app.items, &app.search);
         app.active_menu_item = MenuItem::ItemDetail;
         let selected_item = item_filtered
@@ -282,7 +294,14 @@ impl ItemList {
         .collect();
     }
 
-    pub fn process_input_event(&self, event : KeyEvent, app : &app::App) {
+    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+        match event.code {
+            KeyCode::Up => self.keyup(app), 
+            KeyCode::Down => self.keydown(app), 
+            KeyCode::Enter => self.keyenter(app), 
+            KeyCode::Backspace => { app.search.pop(); () }, 
+            _ => {}
+        }
     }
 }
 
@@ -400,4 +419,11 @@ impl ItemDetail {
         rect.render_widget(menu_block, chunks[0]);
         rect.render_widget(p, chunks[1]);
     }
+
+    pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
+        match event.code {
+            _ => {}
+        }
+    }
+
 }

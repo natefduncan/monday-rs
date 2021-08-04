@@ -28,6 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut app = app::App::new();
 
     loop {
+        //Draw frame
         terminal.draw(|mut rect| match app.active_menu_item {
             views::MenuItem::Home => views::Home::render(&mut rect, &app),
             views::MenuItem::Boards => views::BoardList::render(&mut rect, &app),
@@ -35,53 +36,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
         })?;
 
+        //Deal with input
         match rx.recv()? {
             events::Event::Input(event) => {
-                components::event_menu_block(event, &app, &mut terminal); 
-                components::event_search_block(event, &app); 
-            }
-            
-            match event.modifiers {
-                
-                KeyModifiers::SHIFT => match event.code {
-                    KeyCode::Char('Q') => {
-                        app::stop_terminal(&mut terminal);
-                        break;
-                    }
-                    KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home,
-                    KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards,
-                    KeyCode::Char('I') => app.active_menu_item = views::MenuItem::Items,
+                //Quit
+                if event.code == KeyCode::Char('Q') {
+                    app::stop_terminal(&mut terminal); 
+                    break
+                }
+
+                // Component events
+                components::event_menu_block(event, &mut app, &mut terminal); 
+                components::event_search_block(event, &mut app); 
+
+                //View events
+                match app.active_menu_item {
+                    views::MenuItem::Home => {}, 
+                    views::MenuItem::Boards => views::BoardList.process_input_event(event, &mut app),
+                    views::MenuItem::Items => views::ItemList.process_input_event(event, &mut app), 
+                    views::MenuItem::ItemDetail => views::ItemDetail.process_input_event(event, &mut app), 
                     _ => {}
-                },
-                _ => match event.code {
-                    KeyCode::Down => match app.active_menu_item {
-                        views::MenuItem::Boards => views::BoardList::keydown(&mut app),
-                        views::MenuItem::Items => views::ItemList::keydown(&mut app),
-                        _ => (),
-                    },
-                    KeyCode::Up => match app.active_menu_item {
-                        views::MenuItem::Boards => views::BoardList::keyup(&mut app),
-                        views::MenuItem::Items => views::ItemList::keyup(&mut app),
-                        _ => (),
-                    },
-                    KeyCode::Backspace => {
-                        app.search.pop();
-                    }
-                    KeyCode::Enter => match app.active_menu_item {
-                        views::MenuItem::Boards => views::BoardList::keyenter(&mut app),
-                        views::MenuItem::Items => views::ItemList::keyenter(&mut app),
-                        _ => (),
-                    },
-                    KeyCode::Char(c) => {
-                        app.search.push(c);
-                        app.list_state.select(Some(0));
-                    }
-                    _ => {}
-                },
-            },
+                }
+            }, 
             events::Event::Tick => {}
         }
     }
-
     Ok(())
 }
