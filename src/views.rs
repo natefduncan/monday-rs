@@ -571,10 +571,12 @@ impl ItemUpdate {
     }
 
     pub fn keyright(self, app: &mut app::App) {
+        app.key_input = Vec::new(); 
         app.active_menu_item = MenuItem::Home;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
+        app.key_input = Vec::new(); 
         app.active_menu_item = MenuItem::ItemOptions;
     }
 
