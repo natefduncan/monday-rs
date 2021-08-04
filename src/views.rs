@@ -85,7 +85,7 @@ impl BoardList {
         let menu_block = components::get_menu_block(&app);
 
         //Filter boards
-        let filtered = utils::filter_boards(&app.boards, &app.search); 
+        let filtered = utils::filter_boards(&app.boards, &app.key_input); 
         
         //Board chunks
         let board_chunks = Layout::default()
@@ -159,7 +159,7 @@ impl BoardList {
 
     pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let amount_boards = utils::filter_boards(&app.boards, &app.search).len();
+            let amount_boards = utils::filter_boards(&app.boards, &app.key_input).len();
             if selected > 0 {
                 app.list_state.select(Some(selected - 1));
             } else {
@@ -170,7 +170,7 @@ impl BoardList {
 
     pub fn keydown(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let list_length = utils::filter_boards(&app.boards, &app.search).len();
+            let list_length = utils::filter_boards(&app.boards, &app.key_input).len();
             if selected >= list_length - 1 {
                 app.list_state.select(Some(0));
             } else {
@@ -180,14 +180,14 @@ impl BoardList {
     }
 
     pub fn keyenter(self, app: &mut app::App) {
-        let board_filtered = utils::filter_boards(&app.boards, &app.search);
+        let board_filtered = utils::filter_boards(&app.boards, &app.key_input);
         app.active_menu_item = MenuItem::Items;
         let selected_board = board_filtered
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
         app.items = queries::item_list(&app.client, selected_board.id);
-        app.search = Vec::new();
+        app.key_input = Vec::new();
         app.menu_titles = vec!["Home", "Boards", "Items", "Add Item", "Quit"]
             .iter()
             .map(|x| x.to_string())
@@ -199,7 +199,7 @@ impl BoardList {
             KeyCode::Up => self.keyup(app), 
             KeyCode::Down => self.keydown(app), 
             KeyCode::Enter => self.keyenter(app), 
-            KeyCode::Backspace => { app.search.pop().unwrap(); () }, 
+            KeyCode::Backspace => { app.key_input.pop().unwrap(); () }, 
             _ => {}
         }
     }
@@ -216,7 +216,7 @@ impl ItemList {
         let menu_block = components::get_menu_block(&app);
 
         //Filter items
-        let filtered = utils::filter_items(&app.items, &app.search);
+        let filtered = utils::filter_items(&app.items, &app.key_input);
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
@@ -252,7 +252,7 @@ impl ItemList {
 
     pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let amount_boards = utils::filter_items(&app.items, &app.search).len();
+            let amount_boards = utils::filter_items(&app.items, &app.key_input).len();
             if selected > 0 {
                 app.list_state.select(Some(selected - 1));
             } else {
@@ -263,7 +263,7 @@ impl ItemList {
 
     pub fn keydown(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let list_length = utils::filter_items(&app.items, &app.search).len();
+            let list_length = utils::filter_items(&app.items, &app.key_input).len();
             if selected >= list_length - 1 {
                 app.list_state.select(Some(0));
             } else {
@@ -273,14 +273,14 @@ impl ItemList {
     }
 
     pub fn keyenter(self, app: &mut app::App) {
-        let item_filtered = utils::filter_items(&app.items, &app.search);
+        let item_filtered = utils::filter_items(&app.items, &app.key_input);
         app.active_menu_item = MenuItem::ItemDetail;
         let selected_item = item_filtered
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
         app.item_detail = queries::item_detail(&app.client, selected_item.id);
-        app.search = Vec::new();
+        app.key_input = Vec::new();
         app.menu_titles = vec![
             "Home",
             "Boards",
@@ -299,7 +299,7 @@ impl ItemList {
             KeyCode::Up => self.keyup(app), 
             KeyCode::Down => self.keydown(app), 
             KeyCode::Enter => self.keyenter(app), 
-            KeyCode::Backspace => { app.search.pop(); () }, 
+            KeyCode::Backspace => { app.key_input.pop(); () }, 
             _ => {}
         }
     }

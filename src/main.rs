@@ -19,7 +19,6 @@ mod utils;
 mod views;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    //APP
     //Terminal
     let mut terminal = app::start_terminal();
     //Receiver Channel

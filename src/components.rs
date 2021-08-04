@@ -31,7 +31,7 @@ pub fn get_default_chunks(rect: &Frame<CrosstermBackend<io::Stdout>>) -> Vec<Rec
 }
 
 pub fn get_search_block(app: &app::App) -> Paragraph {
-    let search_text: String = app.search.iter().map(|x| x.to_string()).collect::<String>();
+    let search_text: String = app.key_input.iter().map(|x| x.to_string()).collect::<String>();
     return Paragraph::new(search_text)
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Center)
@@ -46,7 +46,7 @@ pub fn get_search_block(app: &app::App) -> Paragraph {
 
 pub fn event_search_block(event : KeyEvent, app : &mut app::App) {
     match event.code {
-        KeyCode::Char(c) => app.search.push(c),
+        KeyCode::Char(c) => app.key_input.push(c),
         _ => {}
     }
 }

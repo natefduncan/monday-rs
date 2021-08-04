@@ -17,7 +17,7 @@ pub struct App {
     pub items: Vec<objects::Item>,
     pub item_detail: objects::Item,
     pub active_menu_item: views::MenuItem,
-    pub search: Vec<char>,
+    pub key_input : Vec<char>,
     pub client: reqwest::blocking::Client,
     pub menu_titles: Vec<String>,
 }
@@ -27,7 +27,7 @@ impl App {
         let mut active_menu_item = views::MenuItem::Boards;
         let mut list_state = ListState::default();
         list_state.select(Some(0));
-        let search: Vec<char> = Vec::new();
+        let key_input: Vec<char> = Vec::new();
         let client = monday::get_client().expect("Could not get client.");
         let boards: Vec<objects::Board> = queries::board_list(&client);
         let items: Vec<objects::Item> = Vec::new();
@@ -37,7 +37,7 @@ impl App {
             items: items,
             item_detail: objects::Item::new(),
             active_menu_item: active_menu_item,
-            search: search,
+            key_input : key_input,
             client: client,
             menu_titles: vec!["Home", "Boards", "Items", "Quit"]
                 .iter()
