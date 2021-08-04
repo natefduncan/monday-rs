@@ -24,7 +24,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> App {
-        let mut active_menu_item = views::MenuItem::Home;
+        let active_menu_item = views::MenuItem::Home;
         let mut list_state = ListState::default();
         list_state.select(Some(0));
         let key_input: Vec<char> = Vec::new();

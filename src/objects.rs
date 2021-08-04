@@ -1,20 +1,20 @@
-#[derive(Debug, Clone)]
-pub struct ActivityLogType {
-    account_id: String,
-    created_at: String,
-    data: String,
-    entity: String,
-    event: String,
-    id: String,
-    user_id: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct ActivityLogType {
+//     account_id: String,
+//     created_at: String,
+//     data: String,
+//     entity: String,
+//     event: String,
+//     id: String,
+//     user_id: String,
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub enum BoardKind {
-    Public,
-    Private,
-    Share,
-}
+// #[derive(Debug, Copy, Clone)]
+// enum BoardKind {
+//     Public,
+//     Private,
+//     Share,
+// }
 
 #[derive(Debug, Clone)]
 pub struct Column {
@@ -86,59 +86,59 @@ pub struct ColumnValue {
     pub r#type: String, // value: JSON,
 }
 
-#[derive(Debug, Clone)]
-pub struct Date {
-    pub dt: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct Date {
+//     pub dt: String,
+// }
 
-impl Date {
-    pub fn new() -> Date {
-        Date { dt: "".to_string() }
-    }
-}
+// impl Date {
+//     fn new() -> Date {
+//         Date { dt: "".to_string() }
+//     }
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub struct JSON {}
+// #[derive(Debug, Copy, Clone)]
+// pub struct JSON {}
 
-#[derive(Debug, Clone)]
-pub struct Asset {
-    created_at: Date,
-    file_extension: String,
-    file_size: u32,
-    id: String,
-    name: String,
-    original_geometry: String,
-    public_url: String,
-    uploaded_by: User,
-    url: String,
-    url_thumbnail: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct Asset {
+//     created_at: Date,
+//     file_extension: String,
+//     file_size: u32,
+//     id: String,
+//     name: String,
+//     original_geometry: String,
+//     public_url: String,
+//     uploaded_by: User,
+//     url: String,
+//     url_thumbnail: String,
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub enum FirstDayOfTheWeek {
-    Sunday,
-    Monday,
-}
+// #[derive(Debug, Copy, Clone)]
+// enum FirstDayOfTheWeek {
+//     Sunday,
+//     Monday,
+// }
 
-#[derive(Debug, Clone)]
-pub struct Account {
-    first_day_of_the_week: FirstDayOfTheWeek,
-    id: u32,
-    logo: String,
-    name: String,
-    plan: Plan,
-    show_timeline_weekends: bool,
-    slug: String,
-    tier: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct Account {
+//     // first_day_of_the_week: FirstDayOfTheWeek,
+//     id: u32,
+//     logo: String,
+//     name: String,
+//     plan: Plan,
+//     show_timeline_weekends: bool,
+//     slug: String,
+//     tier: String,
+// }
 
-#[derive(Debug, Clone)]
-pub struct Plan {
-    max_users: u32,
-    period: String,
-    tier: String,
-    version: u32,
-}
+// #[derive(Debug, Clone)]
+// pub struct Plan {
+//     max_users: u32,
+//     period: String,
+//     tier: String,
+//     version: u32,
+// }
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -181,32 +181,32 @@ impl User {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Team {
-    id: u32,
-    name: String,
-    picture_url: String,
-    users: Vec<User>,
-}
+// #[derive(Debug, Clone)]
+// pub struct Team {
+//     id: u32,
+//     name: String,
+//     picture_url: String,
+//     users: Vec<User>,
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub enum State {
-    All,
-    Active,
-    Archived,
-    Deleted,
-    None,
-}
+// #[derive(Debug, Copy, Clone)]
+// enum State {
+//     All,
+//     Active,
+//     Archived,
+//     Deleted,
+//     None,
+// }
 
-#[derive(Debug, Clone)]
-pub struct Tag {
-    color: String,
-    id: u32,
-    name: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct Tag {
+//     color: String,
+//     id: u32,
+//     name: String,
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub struct ISO8601DateTime {}
+// #[derive(Debug, Copy, Clone)]
+// pub struct ISO8601DateTime {}
 
 #[derive(Debug, Clone)]
 pub struct Update {
@@ -233,26 +233,26 @@ pub struct Reply {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone)]
-pub struct BoardView {
-    id: String,
-    name: String,
-    settings_str: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct BoardView {
+//     id: String,
+//     name: String,
+//     settings_str: String,
+// }
 
-#[derive(Debug, Clone)]
-pub struct Workspace {
-    description: String,
-    id: u32,
-    kind: WorkspaceKind,
-    name: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct Workspace {
+//     description: String,
+//     id: u32,
+//     kind: WorkspaceKind,
+//     name: String,
+// }
 
-#[derive(Debug, Copy, Clone)]
-pub enum WorkspaceKind {
-    Open,
-    Closed,
-}
+// #[derive(Debug, Copy, Clone)]
+// enum WorkspaceKind {
+//     Open,
+//     Closed,
+// }
 
 #[derive(Debug, Clone)]
 pub struct Board {

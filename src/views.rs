@@ -12,7 +12,7 @@ use tui::{
     terminal::Frame,
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
+        Block, BorderType, Borders, Cell, List, ListItem, Paragraph, Row, Table, Wrap,
     },
 };
 
@@ -250,14 +250,6 @@ impl ItemList {
             .iter()
             .map(|x| ListItem::new(x.name.to_owned()))
             .collect();
-        let selected_item = filtered
-            .get(
-                app.list_state
-                    .selected()
-                    .expect("there is always a selected group"),
-            )
-            .unwrap_or(&objects::Item::new())
-            .clone();
 
         let item_list = List::new(list_items).block(board_block).highlight_style(
             Style::default()

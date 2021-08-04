@@ -1,22 +1,13 @@
-use crossterm::event::{KeyCode, KeyModifiers};
-use std::io;
-use tui::{
-    backend::CrosstermBackend,
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
-    style::{Color, Modifier, Style},
-    terminal::Frame,
-    text::{Span, Spans},
-    widgets::{Block, BorderType, Borders, Paragraph, Tabs},
-};
+use crossterm::event::{KeyCode};
 
-mod app;
-mod components;
-mod events;
-mod monday;
-mod objects;
-mod queries;
-mod utils;
-mod views;
+pub mod app;
+pub mod components;
+pub mod events;
+pub mod monday;
+pub mod objects;
+pub mod queries;
+pub mod utils;
+pub mod views;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Terminal
@@ -59,7 +50,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         views::ItemDetail.process_input_event(event, &mut app)
                     }, 
                     views::MenuItem::ItemOptions => views::ItemOptions.process_input_event(event, &mut app), 
-                    _ => {}
                 }
             }
             events::Event::Tick => {}

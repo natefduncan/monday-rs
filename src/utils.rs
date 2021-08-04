@@ -28,7 +28,6 @@ fn filter_by_matches<T: Clone + std::fmt::Debug>(
     filter_vec: &Vec<T>,
     match_vec: &Vec<usize>,
 ) -> Vec<T> {
-    let output: Vec<T> = Vec::new();
     let zip = filter_vec.iter().zip(match_vec.iter());
     let mut matches: Vec<Match<T>> = zip
         .map(|(x, m)| Match {
@@ -45,7 +44,6 @@ fn filter_by_matches<T: Clone + std::fmt::Debug>(
 }
 
 pub fn search_boards(query: String, boards: &Vec<objects::Board>) -> Vec<objects::Board> {
-    let query_lower: String = query.to_lowercase();
     let vec_string: Vec<String> = boards
         .iter()
         .map(|board| board.name.clone())
@@ -56,7 +54,6 @@ pub fn search_boards(query: String, boards: &Vec<objects::Board>) -> Vec<objects
 }
 
 pub fn search_items(query: String, items: &Vec<objects::Item>) -> Vec<objects::Item> {
-    let query_lower: String = query.to_lowercase();
     let vec_string: Vec<String> = items
         .iter()
         .map(|item| item.name.clone())

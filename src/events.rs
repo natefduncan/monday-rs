@@ -1,11 +1,8 @@
 use super::app;
-use super::views;
-use crossterm::event::{self, Event as CEvent, KeyCode, KeyEvent, KeyModifiers};
-use std::io;
+use crossterm::event::{self, Event as CEvent, KeyCode, KeyEvent};
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tui::{backend::CrosstermBackend, Terminal};
 
 //Event loop enum
 pub enum Event<I> {
