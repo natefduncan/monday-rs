@@ -212,10 +212,7 @@ impl BoardList {
             .clone();
         app.items = queries::item_list(&app.client, selected_board.id);
         app.key_input = Vec::new();
-        app.menu_titles = vec!["Home", "Boards", "Items", "Add Item", "Quit"]
-            .iter()
-            .map(|x| x.to_string())
-            .collect::<Vec<String>>();
+        app.list_state.select(Some(0));
     }
 
     pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
@@ -314,17 +311,7 @@ impl ItemList {
             .clone();
         app.item_detail = queries::item_detail(&app.client, selected_item.id);
         app.key_input = Vec::new();
-        app.menu_titles = vec![
-            "Home",
-            "Boards",
-            "Items",
-            "Add Comment",
-            "Change Status",
-            "Quit",
-        ]
-        .iter()
-        .map(|x| x.to_string())
-        .collect();
+        app.list_state.select(Some(0));
     }
 
     pub fn process_input_event(&self, event : KeyEvent, app : &mut app::App) {
