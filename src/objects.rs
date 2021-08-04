@@ -48,7 +48,7 @@ impl Group {
 #[derive(Debug, Clone)]
 pub struct Item {
     // assets: Vec<Asset>,
-    // board: Board,
+    pub board: Board,
     pub id: String,
     pub column_values: Vec<ColumnValue>,
     // pub created_at: Date,
@@ -73,6 +73,7 @@ impl Item {
             subscribers: Vec::new(),
             updated_at: String::from(""),
             updates: Vec::new(),
+            board : Board::new(), 
         }
     }
 }
@@ -83,7 +84,7 @@ pub struct ColumnValue {
     pub id: String,
     pub text: String,
     pub title: String,
-    pub r#type: String, // value: JSON,
+    pub type_: String, // value: JSON,
 }
 
 // #[derive(Debug, Clone)]
@@ -278,4 +279,13 @@ pub struct Board {
     // views : Vec<BoardView>
     // workspace : Workspace,
     // workspace_id : u32
+}
+
+impl Board {
+    pub fn new() -> Board {
+        Board {
+            id : String::from(""), 
+            name : String::from("")
+        }
+    }
 }

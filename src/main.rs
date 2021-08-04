@@ -27,6 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
             views::MenuItem::ItemOptions => views::ItemOptions::render(&mut rect, &mut app),
             views::MenuItem::ItemUpdate => views::ItemUpdate::render(&mut rect, &mut app),
+            views::MenuItem::ColumnOptions => views::ColumnOptions::render(&mut rect, &mut app)
         })?;
 
         //Deal with input
@@ -56,6 +57,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     views::MenuItem::ItemUpdate => {
                         views::ItemUpdate.process_input_event(event, &mut app)
+                    }, 
+                    views::MenuItem::ColumnOptions => {
+                        views::ColumnOptions.process_input_event(event, &mut app)
                     }
                 }
             }

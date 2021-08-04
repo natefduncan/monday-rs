@@ -3,6 +3,8 @@ use super::components;
 use super::objects;
 use super::queries;
 use super::utils;
+use super::cache; 
+
 use crossterm::event::{KeyCode, KeyEvent};
 use std::io;
 use tui::{
@@ -23,6 +25,7 @@ pub enum MenuItem {
     ItemDetail,
     ItemOptions,
     ItemUpdate,
+    ColumnOptions
 }
 
 impl From<MenuItem> for usize {
@@ -34,6 +37,7 @@ impl From<MenuItem> for usize {
             MenuItem::ItemDetail => 3,
             MenuItem::ItemOptions => 3,
             MenuItem::ItemUpdate => 3,
+            MenuItem::ColumnOptions => 3
         }
     }
 }
@@ -509,7 +513,13 @@ impl ItemOptions {
             KeyCode::Down => self.keydown(app),
             KeyCode::Enter => match app.list_state.selected().unwrap() {
                 0 => app.active_menu_item = MenuItem::ItemUpdate,
-                1 => {}
+                1 => {
+                    if app.cache.board_has_meta(app.item_detail.board.id.clone()) {
+                        app.active_menu_item = MenuItem::ColumnOptions; 
+                    } else {
+                        app.active_menu_item = MenuItem::Home; 
+                    }
+                }, 
                 _ => {}
             },
             KeyCode::Char('U') => {
@@ -606,9 +616,6 @@ impl StatusOptions {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
 
-        // Find status column
-        // let status_column = app.item_detail.column_values.filter(|cv| cv.type_ = "Status");
-
         let items = [ListItem::new("Add Update"), ListItem::new("Change Status")];
 
         let option_list = List::new(items)
@@ -652,8 +659,84 @@ impl StatusOptions {
             KeyCode::Down => self.keydown(app),
             KeyCode::Enter => match app.list_state.selected().unwrap() {
                 0 => app.active_menu_item = MenuItem::ItemUpdate,
-                1 => {}
+                1 => {}, 
                 _ => {}
+            },
+            KeyCode::Char('U') => {
+                app.active_menu_item = MenuItem::ItemUpdate;
+            }
+            KeyCode::Char('S') => {}
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct ColumnOptions;
+
+impl ColumnOptions {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        // Find status column
+        let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
+        let items = status_columns.iter().map(|x| ListItem::new(x.title.clone())).collect::<Vec<ListItem>>(); 
+
+        let option_list = List::new(items)
+            .block(Block::default().title("Select Status Column").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= status_columns.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected + 1));
+            }
+        }
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= status_columns.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected - 1));
+            }
+        }
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Enter => {
+                let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
+                let column = status_columns.get(
+                    app.list_state.selected().unwrap()
+                ).unwrap();
+                app.cache.update_board_meta(cache::BoardMeta {
+                    id : app.item_detail.board.id.clone(), 
+                    status_column_id : column.id.clone()
+                }); 
             },
             KeyCode::Char('U') => {
                 app.active_menu_item = MenuItem::ItemUpdate;

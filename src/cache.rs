@@ -35,6 +35,19 @@ impl Cache {
             return cache;
         }
     }
+    
+    pub fn update_board_meta(&mut self, board_meta : BoardMeta) {
+        if self.boards.iter().filter(|board| board.id == board_meta.id).cloned().collect::<Vec<BoardMeta>>().len() == 0 {
+            self.boards.push(board_meta); 
+        } else {
+            self.boards = self.boards.iter().filter(|board| board.id != board_meta.id).cloned().collect::<Vec<BoardMeta>>(); 
+            self.boards.push(board_meta); 
+        }
+    }
+
+    pub fn board_has_meta(&self, board_id : String) -> bool {
+        self.boards.iter().filter(|board| board.id == board_id).cloned().collect::<Vec<BoardMeta>>().len() > 0
+    }
 }
 
 pub fn exists() -> bool {

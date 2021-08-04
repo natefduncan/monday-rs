@@ -150,7 +150,7 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
                 id: c_val.id,
                 text: c_val.text.unwrap_or(String::from("")),
                 title: c_val.title,
-                r#type: c_val.type_,
+                type_: c_val.type_,
                 additional_info: c_val.additional_info.unwrap_or(String::from("")),
             }
         })

@@ -35,6 +35,10 @@ query ItemDetail($item_id:Int) {
             title
             type
             additional_info
+        }, 
+        board {
+            name
+            id
         }
     }
 }

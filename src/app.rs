@@ -10,6 +10,7 @@ use super::monday;
 use super::objects;
 use super::queries;
 use super::views;
+use super::cache; 
 
 pub struct App {
     pub list_state: ListState,
@@ -20,6 +21,7 @@ pub struct App {
     pub key_input: Vec<char>,
     pub client: reqwest::blocking::Client,
     pub menu_titles: Vec<String>,
+    pub cache : cache::Cache, 
 }
 
 impl App {
@@ -31,6 +33,7 @@ impl App {
         let client = monday::get_client().expect("Could not get client.");
         let boards: Vec<objects::Board> = queries::board_list(&client);
         let items: Vec<objects::Item> = Vec::new();
+ 
         App {
             list_state: list_state,
             boards: boards,
@@ -43,6 +46,7 @@ impl App {
                 .iter()
                 .map(|x| x.to_string())
                 .collect::<Vec<String>>(),
+            cache : cache::Cache::new()
         }
     }
 }
