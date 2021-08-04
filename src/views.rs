@@ -691,6 +691,7 @@ pub struct StatusOptions;
 
 impl StatusOptions {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        
 
     }
 
