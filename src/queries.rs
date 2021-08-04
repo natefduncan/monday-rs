@@ -126,6 +126,11 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
     output.group = Group {
         title: item.group.unwrap().title,
     };
+    //Board
+    output.board = Board {
+        id : item.board.clone().unwrap().id, 
+        name : item.board.clone().unwrap().name
+    };
     //Subscribers
     output.subscribers = item
         .subscribers
