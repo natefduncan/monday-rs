@@ -23,6 +23,7 @@ pub enum MenuItem {
     Boards,
     Items,
     ItemDetail,
+    ItemOptions
 }
 
 impl From<MenuItem> for usize {
@@ -32,6 +33,7 @@ impl From<MenuItem> for usize {
             MenuItem::Boards => 1,
             MenuItem::Items => 2,
             MenuItem::ItemDetail => 3,
+            MenuItem::ItemOptions => 3,
         }
     }
 }
@@ -448,10 +450,74 @@ impl ItemDetail {
         app.active_menu_item = MenuItem::Items;
     }
 
+    pub fn keyenter(self, app : &mut app::App) {
+        app.active_menu_item = MenuItem::ItemOptions; 
+        app.key_input = Vec::new(); 
+        app.list_state.select(Some(0)); 
+    }
+
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
             KeyCode::Left => self.keyleft(app),
             KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => self.keyenter(app), 
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct ItemOptions;
+
+impl ItemOptions {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        let items = [
+            ListItem::new("Add Update"), 
+            ListItem::new("Mark as Done"),
+        ];
+
+        let option_list = List::new(items)
+            .block(Block::default().title("Options").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state); 
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        match app.list_state.selected().unwrap() {
+            0 => app.list_state.select(Some(1)), 
+            1 => app.list_state.select(Some(0)), 
+            _ => app.list_state.select(Some(0))
+        } 
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        match app.list_state.selected().unwrap() {
+            0 => app.list_state.select(Some(1)), 
+            1 => app.list_state.select(Some(0)), 
+            _ => app.list_state.select(Some(0))
+        } 
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Up => self.keyup(app), 
+            KeyCode::Down => self.keydown(app), 
             _ => {}
         }
     }
