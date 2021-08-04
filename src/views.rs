@@ -199,7 +199,6 @@ impl BoardList {
             KeyCode::Up => self.keyup(app), 
             KeyCode::Down => self.keydown(app), 
             KeyCode::Enter => self.keyenter(app), 
-            KeyCode::Backspace => { app.key_input.pop().unwrap(); () }, 
             _ => {}
         }
     }
@@ -299,7 +298,6 @@ impl ItemList {
             KeyCode::Up => self.keyup(app), 
             KeyCode::Down => self.keydown(app), 
             KeyCode::Enter => self.keyenter(app), 
-            KeyCode::Backspace => { app.key_input.pop(); () }, 
             _ => {}
         }
     }

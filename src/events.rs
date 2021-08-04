@@ -63,6 +63,7 @@ pub fn handle_menu(event : KeyEvent, app : &mut app::App, terminal : &mut Termin
 pub fn handle_key_input(event : KeyEvent, app : &mut app::App) {
     match event.code {
         KeyCode::Char(c) => app.key_input.push(c),
+        KeyCode::Backspace => { app.key_input.pop(); ()}
         _ => {}
     }
 }
