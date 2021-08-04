@@ -23,7 +23,8 @@ pub enum MenuItem {
     Boards,
     Items,
     ItemDetail,
-    ItemOptions
+    ItemOptions,
+    ItemUpdate, 
 }
 
 impl From<MenuItem> for usize {
@@ -34,6 +35,7 @@ impl From<MenuItem> for usize {
             MenuItem::Items => 2,
             MenuItem::ItemDetail => 3,
             MenuItem::ItemOptions => 3,
+            MenuItem::ItemUpdate => 3, 
         }
     }
 }
@@ -510,6 +512,92 @@ impl ItemOptions {
             KeyCode::Right => self.keyright(app),
             KeyCode::Up => self.keyup(app), 
             KeyCode::Down => self.keydown(app), 
+            KeyCode::Enter => {
+                match app.list_state.selected().unwrap() {
+                    0 => app.active_menu_item = MenuItem::ItemUpdate, 
+                    1 => {}, 
+                    _ => {}
+                }
+            }
+            KeyCode::Char('U') => {
+                app.active_menu_item = MenuItem::ItemUpdate;
+            }, 
+            KeyCode::Char('S') => {}, 
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct ItemUpdate;
+
+impl ItemUpdate {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        //Key input as string
+        let update_text: String = app
+        .key_input
+        .iter()
+        .map(|x| x.to_string())
+        .collect::<String>();
+
+        //Span Vec
+        let update_span = vec![
+            Spans::from(vec![
+                Span::styled(
+                    "Update: ",
+                    Style::default()
+                        .add_modifier(Modifier::ITALIC)
+                        .fg(Color::LightBlue),
+                ),
+                Span::raw(update_text),
+            ])
+        ]; 
+
+        let p = Paragraph::new(update_span)
+        .style(Style::default())
+        .alignment(Alignment::Left)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title("Add Update")
+                .border_type(BorderType::Plain),
+        ).wrap(Wrap { trim: true });
+
+        rect.render_widget(p, chunks[1]); 
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::ItemOptions;
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app), 
+            KeyCode::Right => self.keyright(app), 
+            KeyCode::Enter => {        
+                //Key input as string
+                let update_text: String = app
+                .key_input
+                .iter()
+                .map(|x| x.to_string())
+                .collect::<String>();
+                // GraphQL create update                
+                println!("{}", app.item_detail.id.clone()); 
+                println!("{}", update_text); 
+                queries::create_update(&app.client, app.item_detail.id.clone(), update_text); 
+                // Get Item Detail again
+                app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone());
+                //Change menu back to Item Detail
+                app.active_menu_item = MenuItem::ItemDetail; 
+            },
             _ => {}
         }
     }

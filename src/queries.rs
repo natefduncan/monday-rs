@@ -205,7 +205,7 @@ struct CreateUpdate;
 pub fn create_update(client: &Client, item_id: String, body: String) -> String {
     let variables = create_update::Variables {
         item_id: Some(item_id.parse::<i64>().unwrap()),
-        body: Some(body),
+        body: body,
     };
     let res: Response<create_update::ResponseData> =
         monday::query::<CreateUpdate>(&client, variables).expect("Could not execute query.");
