@@ -97,7 +97,7 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
 struct ItemDetail;
 
 type Date = String;
-type JSON = String; 
+type JSON = String;
 
 pub fn item_detail(client: &Client, item_id: String) -> Item {
     let variables = item_detail::Variables {
@@ -151,7 +151,7 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
                 text: c_val.text.unwrap_or(String::from("")),
                 title: c_val.title,
                 r#type: c_val.type_,
-                additional_info : c_val.additional_info.unwrap_or(String::from(""))
+                additional_info: c_val.additional_info.unwrap_or(String::from("")),
             }
         })
         .collect::<Vec<ColumnValue>>();

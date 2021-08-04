@@ -11,9 +11,7 @@ use tui::{
     style::{Color, Modifier, Style},
     terminal::Frame,
     text::{Span, Spans},
-    widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, Paragraph, Row, Table, Wrap,
-    },
+    widgets::{Block, BorderType, Borders, Cell, List, ListItem, Paragraph, Row, Table, Wrap},
 };
 
 //Menu enum
@@ -24,7 +22,7 @@ pub enum MenuItem {
     Items,
     ItemDetail,
     ItemOptions,
-    ItemUpdate, 
+    ItemUpdate,
 }
 
 impl From<MenuItem> for usize {
@@ -35,7 +33,7 @@ impl From<MenuItem> for usize {
             MenuItem::Items => 2,
             MenuItem::ItemDetail => 3,
             MenuItem::ItemOptions => 3,
-            MenuItem::ItemUpdate => 3, 
+            MenuItem::ItemUpdate => 3,
         }
     }
 }
@@ -444,17 +442,17 @@ impl ItemDetail {
         app.active_menu_item = MenuItem::Items;
     }
 
-    pub fn keyenter(self, app : &mut app::App) {
-        app.active_menu_item = MenuItem::ItemOptions; 
-        app.key_input = Vec::new(); 
-        app.list_state.select(Some(0)); 
+    pub fn keyenter(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::ItemOptions;
+        app.key_input = Vec::new();
+        app.list_state.select(Some(0));
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
             KeyCode::Left => self.keyleft(app),
             KeyCode::Right => self.keyright(app),
-            KeyCode::Enter => self.keyenter(app), 
+            KeyCode::Enter => self.keyenter(app),
             _ => {}
         }
     }
@@ -468,10 +466,7 @@ impl ItemOptions {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
 
-        let items = [
-            ListItem::new("Add Update"), 
-            ListItem::new("Mark as Done"),
-        ];
+        let items = [ListItem::new("Add Update"), ListItem::new("Mark as Done")];
 
         let option_list = List::new(items)
             .block(Block::default().title("Options").borders(Borders::ALL))
@@ -479,7 +474,7 @@ impl ItemOptions {
             .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
             .highlight_symbol(">>");
 
-        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state); 
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
     }
 
     pub fn keyright(self, app: &mut app::App) {
@@ -492,38 +487,36 @@ impl ItemOptions {
 
     pub fn keyup(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(1)), 
-            1 => app.list_state.select(Some(0)), 
-            _ => app.list_state.select(Some(0))
-        } 
+            0 => app.list_state.select(Some(1)),
+            1 => app.list_state.select(Some(0)),
+            _ => app.list_state.select(Some(0)),
+        }
     }
 
     pub fn keydown(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(1)), 
-            1 => app.list_state.select(Some(0)), 
-            _ => app.list_state.select(Some(0))
-        } 
+            0 => app.list_state.select(Some(1)),
+            1 => app.list_state.select(Some(0)),
+            _ => app.list_state.select(Some(0)),
+        }
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
             KeyCode::Left => self.keyleft(app),
             KeyCode::Right => self.keyright(app),
-            KeyCode::Up => self.keyup(app), 
-            KeyCode::Down => self.keydown(app), 
-            KeyCode::Enter => {
-                match app.list_state.selected().unwrap() {
-                    0 => app.active_menu_item = MenuItem::ItemUpdate, 
-                    1 => {}, 
-                    _ => {}
-                }
-            }
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Enter => match app.list_state.selected().unwrap() {
+                0 => app.active_menu_item = MenuItem::ItemUpdate,
+                1 => {}
+                _ => {}
+            },
             KeyCode::Char('U') => {
                 app.active_menu_item = MenuItem::ItemUpdate;
-                app.key_input = Vec::new(); 
-            }, 
-            KeyCode::Char('S') => {}, 
+                app.key_input = Vec::new();
+            }
+            KeyCode::Char('S') => {}
             _ => {}
         }
     }
@@ -539,68 +532,67 @@ impl ItemUpdate {
 
         //Key input as string
         let update_text: String = app
-        .key_input
-        .iter()
-        .map(|x| x.to_string())
-        .collect::<String>();
+            .key_input
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<String>();
 
         //Span Vec
-        let update_span = vec![
-            Spans::from(vec![
-                Span::styled(
-                    "Update: ",
-                    Style::default()
-                        .add_modifier(Modifier::ITALIC)
-                        .fg(Color::LightBlue),
-                ),
-                Span::raw(update_text),
-            ])
-        ]; 
+        let update_span = vec![Spans::from(vec![
+            Span::styled(
+                "Update: ",
+                Style::default()
+                    .add_modifier(Modifier::ITALIC)
+                    .fg(Color::LightBlue),
+            ),
+            Span::raw(update_text),
+        ])];
 
         let p = Paragraph::new(update_span)
-        .style(Style::default())
-        .alignment(Alignment::Left)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::White))
-                .title("Add Update")
-                .border_type(BorderType::Plain),
-        ).wrap(Wrap { trim: true });
+            .style(Style::default())
+            .alignment(Alignment::Left)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .style(Style::default().fg(Color::White))
+                    .title("Add Update")
+                    .border_type(BorderType::Plain),
+            )
+            .wrap(Wrap { trim: true });
 
-        rect.render_widget(p, chunks[1]); 
+        rect.render_widget(p, chunks[1]);
     }
 
     pub fn keyright(self, app: &mut app::App) {
-        app.key_input = Vec::new(); 
+        app.key_input = Vec::new();
         app.active_menu_item = MenuItem::Home;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.key_input = Vec::new(); 
+        app.key_input = Vec::new();
         app.active_menu_item = MenuItem::ItemOptions;
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
-            KeyCode::Left => self.keyleft(app), 
-            KeyCode::Right => self.keyright(app), 
-            KeyCode::Enter => {        
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => {
                 //Key input as string
                 let update_text: String = app
-                .key_input
-                .iter()
-                .map(|x| x.to_string())
-                .collect::<String>();
-                // GraphQL create update                
-                println!("{}", app.item_detail.id.clone()); 
-                println!("{}", update_text); 
-                queries::create_update(&app.client, app.item_detail.id.clone(), update_text); 
+                    .key_input
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<String>();
+                // GraphQL create update
+                println!("{}", app.item_detail.id.clone());
+                println!("{}", update_text);
+                queries::create_update(&app.client, app.item_detail.id.clone(), update_text);
                 // Get Item Detail again
                 app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone());
                 //Change menu back to Item Detail
-                app.active_menu_item = MenuItem::ItemDetail; 
-            },
+                app.active_menu_item = MenuItem::ItemDetail;
+            }
             _ => {}
         }
     }
@@ -617,10 +609,7 @@ impl StatusOptions {
         // Find status column
         // let status_column = app.item_detail.column_values.filter(|cv| cv.type_ = "Status");
 
-        let items = [
-            ListItem::new("Add Update"), 
-            ListItem::new("Change Status"),
-        ];
+        let items = [ListItem::new("Add Update"), ListItem::new("Change Status")];
 
         let option_list = List::new(items)
             .block(Block::default().title("Options").borders(Borders::ALL))
@@ -628,7 +617,7 @@ impl StatusOptions {
             .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
             .highlight_symbol(">>");
 
-        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state); 
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
     }
 
     pub fn keyright(self, app: &mut app::App) {
@@ -641,37 +630,35 @@ impl StatusOptions {
 
     pub fn keyup(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(1)), 
-            1 => app.list_state.select(Some(0)), 
-            _ => app.list_state.select(Some(0))
-        } 
+            0 => app.list_state.select(Some(1)),
+            1 => app.list_state.select(Some(0)),
+            _ => app.list_state.select(Some(0)),
+        }
     }
 
     pub fn keydown(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(1)), 
-            1 => app.list_state.select(Some(0)), 
-            _ => app.list_state.select(Some(0))
-        } 
+            0 => app.list_state.select(Some(1)),
+            1 => app.list_state.select(Some(0)),
+            _ => app.list_state.select(Some(0)),
+        }
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
         match event.code {
             KeyCode::Left => self.keyleft(app),
             KeyCode::Right => self.keyright(app),
-            KeyCode::Up => self.keyup(app), 
-            KeyCode::Down => self.keydown(app), 
-            KeyCode::Enter => {
-                match app.list_state.selected().unwrap() {
-                    0 => app.active_menu_item = MenuItem::ItemUpdate, 
-                    1 => {}, 
-                    _ => {}
-                }
-            }
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Enter => match app.list_state.selected().unwrap() {
+                0 => app.active_menu_item = MenuItem::ItemUpdate,
+                1 => {}
+                _ => {}
+            },
             KeyCode::Char('U') => {
                 app.active_menu_item = MenuItem::ItemUpdate;
-            }, 
-            KeyCode::Char('S') => {}, 
+            }
+            KeyCode::Char('S') => {}
             _ => {}
         }
     }
