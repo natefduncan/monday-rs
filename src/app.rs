@@ -12,6 +12,7 @@ use super::queries;
 use super::views;
 use super::cache; 
 
+#[derive(Debug, Clone)]
 pub struct App {
     pub list_state: ListState,
     pub boards: Vec<objects::Board>,
