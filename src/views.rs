@@ -521,6 +521,7 @@ impl ItemOptions {
             }
             KeyCode::Char('U') => {
                 app.active_menu_item = MenuItem::ItemUpdate;
+                app.key_input = Vec::new(); 
             }, 
             KeyCode::Char('S') => {}, 
             _ => {}
@@ -600,6 +601,77 @@ impl ItemUpdate {
                 //Change menu back to Item Detail
                 app.active_menu_item = MenuItem::ItemDetail; 
             },
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct StatusOptions;
+
+impl StatusOptions {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        // Find status column
+        // let status_column = app.item_detail.column_values.filter(|cv| cv.type_ = "Status");
+
+        let items = [
+            ListItem::new("Add Update"), 
+            ListItem::new("Change Status"),
+        ];
+
+        let option_list = List::new(items)
+            .block(Block::default().title("Options").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state); 
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        match app.list_state.selected().unwrap() {
+            0 => app.list_state.select(Some(1)), 
+            1 => app.list_state.select(Some(0)), 
+            _ => app.list_state.select(Some(0))
+        } 
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        match app.list_state.selected().unwrap() {
+            0 => app.list_state.select(Some(1)), 
+            1 => app.list_state.select(Some(0)), 
+            _ => app.list_state.select(Some(0))
+        } 
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Up => self.keyup(app), 
+            KeyCode::Down => self.keydown(app), 
+            KeyCode::Enter => {
+                match app.list_state.selected().unwrap() {
+                    0 => app.active_menu_item = MenuItem::ItemUpdate, 
+                    1 => {}, 
+                    _ => {}
+                }
+            }
+            KeyCode::Char('U') => {
+                app.active_menu_item = MenuItem::ItemUpdate;
+            }, 
+            KeyCode::Char('S') => {}, 
             _ => {}
         }
     }

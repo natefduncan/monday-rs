@@ -5,3 +5,4 @@ pub mod objects;
 pub mod queries;
 pub mod utils;
 pub mod views;
+pub mod cache; 

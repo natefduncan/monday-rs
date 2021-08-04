@@ -8,6 +8,7 @@ pub mod objects;
 pub mod queries;
 pub mod utils;
 pub mod views;
+pub mod cache;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Terminal
