@@ -39,18 +39,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         match rx.recv()? {
             events::Event::Input(event) => {
                 //Quit
-                if event.code == KeyCode::Char('Q') {
+                if event.code == KeyCode::Esc {
                     app::stop_terminal(&mut terminal); 
                     break
                 }
 
-                // Menu and key input
-                events::handle_menu(event, &mut app, &mut terminal); 
+                // Key Input
                 events::handle_key_input(event, &mut app); 
 
                 //View events
                 match app.active_menu_item {
-                    views::MenuItem::Home => {}, 
+                    views::MenuItem::Home => views::Home.process_input_event(event, &mut app), 
                     views::MenuItem::Boards => views::BoardList.process_input_event(event, &mut app),
                     views::MenuItem::Items => views::ItemList.process_input_event(event, &mut app), 
                     views::MenuItem::ItemDetail => views::ItemDetail.process_input_event(event, &mut app), 
