@@ -44,9 +44,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     break
                 }
 
-                // Component events
-                components::event_menu_block(event, &mut app, &mut terminal); 
-                components::event_search_block(event, &mut app); 
+                // Menu and key input
+                events::handle_menu(event, &mut app, &mut terminal); 
+                events::handle_key_input(event, &mut app); 
 
                 //View events
                 match app.active_menu_item {

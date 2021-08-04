@@ -1,7 +1,14 @@
-use crossterm::event::{self, Event as CEvent, KeyEvent};
+use crossterm::event::{self, Event as CEvent, KeyEvent, KeyCode, KeyModifiers};
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, Instant};
+use tui::{
+    Terminal, 
+    backend::CrosstermBackend
+}; 
+use std::io; 
+use super::app; 
+use super::views; 
 
 //Event loop enum
 pub enum Event<I> {
@@ -32,4 +39,30 @@ pub fn start_input_handling() -> mpsc::Receiver<Event<KeyEvent>> {
         }
     });
     return rx;
+}
+
+pub fn handle_menu(event : KeyEvent, app : &mut app::App, terminal : &mut Terminal<CrosstermBackend<io::Stdout>>) {
+    match event.modifiers {
+        KeyModifiers::SHIFT => {
+            match event.code {
+                KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home, 
+                KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards, 
+                KeyCode::Char('I') => app.active_menu_item = views::MenuItem::Items, 
+                KeyCode::Char('Q') => {
+                    app::stop_terminal(terminal);
+                }, 
+                _ => {}
+            }
+        }, 
+        _ => {}
+            
+        
+    }
+}
+
+pub fn handle_key_input(event : KeyEvent, app : &mut app::App) {
+    match event.code {
+        KeyCode::Char(c) => app.key_input.push(c),
+        _ => {}
+    }
 }

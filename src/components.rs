@@ -7,11 +7,7 @@ use tui::{
     terminal::Frame,
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Paragraph, Tabs},
-    Terminal
 };
-
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers}; 
-use super::views; 
 
 pub fn get_default_chunks(rect: &Frame<CrosstermBackend<io::Stdout>>) -> Vec<Rect> {
     let size = rect.size();
@@ -44,13 +40,6 @@ pub fn get_search_block(app: &app::App) -> Paragraph {
         );
 }
 
-pub fn event_search_block(event : KeyEvent, app : &mut app::App) {
-    match event.code {
-        KeyCode::Char(c) => app.key_input.push(c),
-        _ => {}
-    }
-}
-
 pub fn get_menu_block(app: &app::App) -> Tabs {
     let menu = app
         .menu_titles
@@ -78,21 +67,4 @@ pub fn get_menu_block(app: &app::App) -> Tabs {
     return tabs;
 }
 
-pub fn event_menu_block(event : KeyEvent, app : &mut app::App, terminal : &mut Terminal<CrosstermBackend<io::Stdout>>) {
-    match event.modifiers {
-        KeyModifiers::SHIFT => {
-            match event.code {
-                KeyCode::Char('H') => app.active_menu_item = views::MenuItem::Home, 
-                KeyCode::Char('B') => app.active_menu_item = views::MenuItem::Boards, 
-                KeyCode::Char('I') => app.active_menu_item = views::MenuItem::Items, 
-                KeyCode::Char('Q') => {
-                    app::stop_terminal(terminal);
-                }, 
-                _ => {}
-            }
-        }, 
-        _ => {}
-            
-        
-    }
-}
+
