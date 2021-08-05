@@ -517,7 +517,8 @@ impl ItemOptions {
                 0 => app.active_menu_item = MenuItem::ItemUpdate,
                 1 => {
                     if app.cache.board_has_meta(app.item_detail.board.id.clone()) {
-                        app.active_menu_item = MenuItem::ColumnOptions; 
+                        app.status_labels = queries::board_columns(&app.client, app.item_detail.board.id.clone()); 
+                        app.active_menu_item = MenuItem::StatusOptions; 
                     } else {
                         app.active_menu_item = MenuItem::ColumnOptions; 
                     }
@@ -739,9 +740,8 @@ impl StatusOptions {
                 let selected_label = app.status_labels.get(
                     app.list_state.selected().unwrap()
                 ).unwrap(); 
-                println!("{:?}", selected_label); 
                 queries::change_status(app, selected_label.name.clone()); 
-                thread::sleep(time::Duration::from_secs(10));
+                app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone()); 
                 app.active_menu_item = MenuItem::ItemDetail; 
             },
             _ => {}
