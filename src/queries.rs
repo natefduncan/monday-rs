@@ -299,6 +299,11 @@ pub fn change_status(app : app::App, item_id : i64, column_id : String, board_id
         board_id : board_id, 
         value : value, 
     };
+
+    // let actual_body = serde_json::to_value(
+    //     ChangeStatus::build_query(variables)
+    // ).expect("could not do it");
+    // println!("{:?}", actual_body); 
     let res: Response<change_status::ResponseData> =
         monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
     println!("{:?}", res); 
