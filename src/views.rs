@@ -641,10 +641,10 @@ impl ColumnOptions {
     pub fn keyup(self, app: &mut app::App) {
         let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
         if let Some(selected) = app.list_state.selected() {
-            if selected >= status_columns.len() - 1 {
-                app.list_state.select(Some(0));
-            } else {
+            if selected == 0 {
                 app.list_state.select(Some(status_columns.len() - 1));
+            } else {
+                app.list_state.select(Some(selected - 1));
             }
         }
     }
@@ -686,15 +686,14 @@ impl ColumnOptions {
 
 #[derive(Debug, Copy, Clone)]
 pub struct StatusOptions;
-use std::{thread, time};
 
 impl StatusOptions {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
         let chunks = components::get_default_chunks(&rect); 
-        let items = app.status_labels.iter().map(|x| ListItem::new(x.name.clone())).collect::<Vec<ListItem>>(); 
+        let items = app.status_labels.iter().map(|x| ListItem::new(x.name.clone().replace("\"", ""))).collect::<Vec<ListItem>>(); 
 
         let option_list = List::new(items)
-            .block(Block::default().title("Select Status Column").borders(Borders::ALL))
+            .block(Block::default().title("Change Status").borders(Borders::ALL))
             .style(Style::default().fg(Color::White))
             .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
             .highlight_symbol(">>");
@@ -712,10 +711,10 @@ impl StatusOptions {
 
     pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            if selected >= app.status_labels.len() - 1 {
-                app.list_state.select(Some(0));
-            } else {
+            if selected == 0 {
                 app.list_state.select(Some(app.status_labels.len() - 1));
+            } else {
+                app.list_state.select(Some(selected - 1));
             }
         }
     }
