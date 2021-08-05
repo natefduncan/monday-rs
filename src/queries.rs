@@ -1,5 +1,6 @@
 use super::monday;
 use super::objects::*;
+use super::app; 
 use graphql_client::{GraphQLQuery, Response};
 use reqwest::blocking::Client;
 use serde_json::{
@@ -269,4 +270,36 @@ fn parse_board_columns(res: Response<board_columns::ResponseData>) -> Vec<Label>
         }; 
     }; 
     labels
+}
+
+//Change status column
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/change_status.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct ChangeStatus;
+
+pub fn change_status(app : app::App, item_id : i64, column_id : String, board_id : i64, value : String) {
+    // let status_column = app
+    //     .cache
+    //     .boards
+    //     .iter()
+    //     .filter(|board| board.id == app.item_detail.board.id)
+    //     .nth(0)
+    //     .expect("no status column for board");
+
+    let variables = change_status::Variables {
+        // item_id : Some(app.item_detail.id.parse::<i64>().unwrap()), 
+        // column_id : Some(status_column.status_column_id.clone()), 
+        // board_id : app.item_detail.board.id.parse::<i64>().unwrap(), 
+        item_id : Some(item_id), 
+        column_id : column_id, 
+        board_id : board_id, 
+        value : value, 
+    };
+    let res: Response<change_status::ResponseData> =
+        monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
+    println!("{:?}", res); 
 }

@@ -22,6 +22,7 @@ pub struct App {
     pub key_input: Vec<char>,
     pub client: reqwest::blocking::Client,
     pub menu_titles: Vec<String>,
+    pub status_labels: Vec<objects::Label>, 
     pub cache : cache::Cache, 
 }
 
@@ -47,7 +48,9 @@ impl App {
                 .iter()
                 .map(|x| x.to_string())
                 .collect::<Vec<String>>(),
+            status_labels : Vec::new(), 
             cache : cache::Cache::new()
+
         }
     }
 }

@@ -675,12 +675,9 @@ impl ColumnOptions {
                     status_column_id : column.id.clone()
                 }); 
                 cache::write(&app.cache).expect("could not write cache");
-                app.active_menu_item = MenuItem::Home; 
-            },
-            KeyCode::Char('U') => {
-                app.active_menu_item = MenuItem::ItemUpdate;
-            }
-            KeyCode::Char('S') => {}
+                app.status_labels = queries::board_columns(&app.client, app.item_detail.board.id.clone()); 
+                app.active_menu_item = MenuItem::StatusOptions; 
+            }, 
             _ => {}
         }
     }
@@ -691,8 +688,16 @@ pub struct StatusOptions;
 
 impl StatusOptions {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
-        
+        let chunks = components::get_default_chunks(&rect); 
+        let items = app.status_labels.iter().map(|x| ListItem::new(x.name.clone())).collect::<Vec<ListItem>>(); 
 
+        let option_list = List::new(items)
+            .block(Block::default().title("Select Status Column").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
     }
 
     pub fn keyright(self, app: &mut app::App) {
@@ -704,25 +709,23 @@ impl StatusOptions {
     }
 
     pub fn keyup(self, app: &mut app::App) {
-        // let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
-        // if let Some(selected) = app.list_state.selected() {
-        //     if selected >= status_columns.len() - 1 {
-        //         app.list_state.select(Some(0));
-        //     } else {
-        //         app.list_state.select(Some(status_columns.len() - 1));
-        //     }
-        // }
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= app.status_labels.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(app.status_labels.len() - 1));
+            }
+        }
     }
 
     pub fn keydown(self, app: &mut app::App) {
-        // let status_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("color")).cloned().collect::<Vec<objects::ColumnValue>>();
-        // if let Some(selected) = app.list_state.selected() {
-        //     if selected >= status_columns.len() - 1 {
-        //         app.list_state.select(Some(0));
-        //     } else {
-        //         app.list_state.select(Some(selected + 1));
-        //     }
-        // }
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= app.status_labels.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected + 1));
+            }
+        }
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
@@ -732,7 +735,8 @@ impl StatusOptions {
             KeyCode::Up => self.keyup(app),
             KeyCode::Down => self.keydown(app),
             KeyCode::Enter => {
-               
+                
+                app.active_menu_item = MenuItem::ItemDetail; 
             },
             _ => {}
         }
