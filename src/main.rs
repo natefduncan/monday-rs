@@ -10,21 +10,21 @@ pub mod queries;
 pub mod utils;
 pub mod views;
 
-fn main() {
-    let app = app::App::new(); 
-    let item_id = String::from("1528807035"); 
-    let board_id = String::from("679878548"); 
-    let column_id = String::from("status"); 
-    //app : app::App, item_id : i64, column_id : String, board_id : i64, value : String
-    queries::change_status(app, 
-        item_id.parse::<i64>().unwrap(), 
-        column_id, 
-        board_id.parse::<i64>().unwrap(), 
-        format!("{{\"label\":\"{}\"}}", "Stuck")
-    );
-}
+// fn main() {
+//     let app = app::App::new(); 
+//     let item_id = String::from("1528807035"); 
+//     let board_id = String::from("679878548"); 
+//     let column_id = String::from("status"); 
+//     //app : app::App, item_id : i64, column_id : String, board_id : i64, value : String
+//     queries::change_status(app, 
+//         item_id.parse::<i64>().unwrap(), 
+//         column_id, 
+//         board_id.parse::<i64>().unwrap(), 
+//         format!("{{\"label\":\"{}\"}}", "Stuck")
+//     );
+// }
 
-fn main2() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Terminal
     let mut terminal = app::start_terminal();
     //Receiver Channel

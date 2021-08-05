@@ -281,30 +281,21 @@ fn parse_board_columns(res: Response<board_columns::ResponseData>) -> Vec<Label>
 )]
 struct ChangeStatus;
 
-pub fn change_status(app : app::App, item_id : i64, column_id : String, board_id : i64, value : String) {
-    // let status_column = app
-    //     .cache
-    //     .boards
-    //     .iter()
-    //     .filter(|board| board.id == app.item_detail.board.id)
-    //     .nth(0)
-    //     .expect("no status column for board");
-
+pub fn change_status(app : &app::App, value : String) {
+    let status_column = app
+        .cache
+        .boards
+        .iter()
+        .filter(|board| board.id == app.item_detail.board.id)
+        .nth(0)
+        .expect("no status column for board");
+        
     let variables = change_status::Variables {
-        // item_id : Some(app.item_detail.id.parse::<i64>().unwrap()), 
-        // column_id : Some(status_column.status_column_id.clone()), 
-        // board_id : app.item_detail.board.id.parse::<i64>().unwrap(), 
-        item_id : Some(item_id), 
-        column_id : column_id, 
-        board_id : board_id, 
-        value : value, 
+        item_id : Some(app.item_detail.id.parse::<i64>().unwrap()), 
+        column_id : status_column.status_column_id.clone(), 
+        board_id : app.item_detail.board.id.parse::<i64>().unwrap(), 
+        value : format!("{{\"label\":\"{}\"}}", value.replace("\"", "")) 
     };
-
-    // let actual_body = serde_json::to_value(
-    //     ChangeStatus::build_query(variables)
-    // ).expect("could not do it");
-    // println!("{:?}", actual_body); 
     let res: Response<change_status::ResponseData> =
         monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
-    println!("{:?}", res); 
 }

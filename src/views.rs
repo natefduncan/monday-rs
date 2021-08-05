@@ -472,7 +472,7 @@ impl ItemOptions {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
 
-        let items = [ListItem::new("Add Update"), ListItem::new("Mark as Done")];
+        let items = [ListItem::new("Add Update"), ListItem::new("Change Status")];
 
         let option_list = List::new(items)
             .block(Block::default().title("Options").borders(Borders::ALL))
@@ -685,6 +685,7 @@ impl ColumnOptions {
 
 #[derive(Debug, Copy, Clone)]
 pub struct StatusOptions;
+use std::{thread, time};
 
 impl StatusOptions {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
@@ -735,7 +736,12 @@ impl StatusOptions {
             KeyCode::Up => self.keyup(app),
             KeyCode::Down => self.keydown(app),
             KeyCode::Enter => {
-                
+                let selected_label = app.status_labels.get(
+                    app.list_state.selected().unwrap()
+                ).unwrap(); 
+                println!("{:?}", selected_label); 
+                queries::change_status(app, selected_label.name.clone()); 
+                thread::sleep(time::Duration::from_secs(10));
                 app.active_menu_item = MenuItem::ItemDetail; 
             },
             _ => {}
