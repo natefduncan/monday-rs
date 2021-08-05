@@ -28,8 +28,8 @@
 
 #[derive(Debug, Clone)]
 pub struct Label {
-    column_id : String,
-    name : String, 
+    pub column_id : String,
+    pub name : String, 
 }
 
 #[derive(Debug, Clone)]

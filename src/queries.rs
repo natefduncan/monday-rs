@@ -2,6 +2,10 @@ use super::monday;
 use super::objects::*;
 use graphql_client::{GraphQLQuery, Response};
 use reqwest::blocking::Client;
+use serde_json::{
+    map::Map,
+    value::Value
+}; 
 
 //BOARD LIST
 #[derive(GraphQLQuery)]
@@ -240,7 +244,7 @@ pub fn board_columns(client: &Client, board_id: String) -> Vec<Label> {
 
 fn parse_board_columns(res: Response<board_columns::ResponseData>) -> Vec<Label> {
     let data = res.data.expect("missing response data");
-    let labels : Vec<Label> = Vec::new(); 
+    let mut labels : Vec<Label> = Vec::new(); 
     let board = data
         .boards
         .unwrap()
@@ -248,26 +252,21 @@ fn parse_board_columns(res: Response<board_columns::ResponseData>) -> Vec<Label>
         .nth(0)
         .expect("missing first value")
         .unwrap();
-    board.columns.iter().map(|col| {
+    for col in board.columns.unwrap().iter() {
         let column = col.clone().unwrap(); 
-        let setting : serde_json::Value = serde_json::from_str(column.settings_str).unwrap();
+        let setting : serde_json::Value = serde_json::from_str(&column.settings_str.clone()).unwrap();
         match setting.get("labels") {
             Some(v) => {
-                let mut counter = 0;
-                loop {
-                    match v.get(counter.to_string()) {
-                        Some(label) => {
-                            labels.push(Label {
-                                column_id : column.id.clone(),
-                                name : label
-                            }); 
-                        }, 
-                        None => break
-                    }
+                let label_map: Map<String, Value> = v.as_object().unwrap().clone();
+                for label in label_map.values() {
+                    labels.push(Label {
+                        column_id : column.id.clone(),
+                        name : label.to_string()
+                    }); 
                 }
             }, 
             None => {}
         }; 
-    }); 
+    }; 
     labels
 }
