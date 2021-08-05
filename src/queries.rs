@@ -296,6 +296,6 @@ pub fn change_status(app : &app::App, value : String) {
         board_id : app.item_detail.board.id.parse::<i64>().unwrap(), 
         value : format!("{{\"label\":\"{}\"}}", value.replace("\"", "")) 
     };
-    let res: Response<change_status::ResponseData> =
-        monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
+    
+    monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
 }
