@@ -237,14 +237,14 @@ impl BoardList {
 pub struct ItemList;
 
 impl ItemList {
-    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &app::App) {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
         let search_block = components::get_search_block(&app);
         let menu_block = components::get_menu_block(&app);
 
         //Filter items
-        let filtered = utils::filter_items(&app.items, &app.key_input);
+        let filtered = utils::filter_items(app);
         let board_block = Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
@@ -272,7 +272,7 @@ impl ItemList {
 
     pub fn keyup(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let amount_boards = utils::filter_items(&app.items, &app.key_input).len();
+            let amount_boards = utils::filter_items(app).len();
             if selected > 0 {
                 app.list_state.select(Some(selected - 1));
             } else {
@@ -283,7 +283,7 @@ impl ItemList {
 
     pub fn keydown(self, app: &mut app::App) {
         if let Some(selected) = app.list_state.selected() {
-            let list_length = utils::filter_items(&app.items, &app.key_input).len();
+            let list_length = utils::filter_items(app).len();
             if selected >= list_length - 1 {
                 app.list_state.select(Some(0));
             } else {
@@ -301,7 +301,7 @@ impl ItemList {
     }
 
     pub fn keyenter(self, app: &mut app::App) {
-        let item_filtered = utils::filter_items(&app.items, &app.key_input);
+        let item_filtered = utils::filter_items(app);
         app.active_menu_item = MenuItem::ItemDetail;
         let selected_item = item_filtered
             .get(app.list_state.selected().unwrap())
@@ -319,6 +319,8 @@ impl ItemList {
             KeyCode::Left => self.keyleft(app),
             KeyCode::Right => self.keyright(app),
             KeyCode::Enter => self.keyenter(app),
+            KeyCode::F(1) => app.f = KeyCode::F(1), //No Filter
+            KeyCode::F(2) => app.f = KeyCode::F(2), //Filter By Assigned
             _ => {}
         }
     }
