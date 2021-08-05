@@ -6,6 +6,9 @@ query ItemList($board_id:Int, $limit:Int, $newest_first:Boolean, $page:Int) {
         group {
             title
         }
+        subscribers {
+          id
+        }
     }
   }
 }

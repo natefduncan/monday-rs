@@ -58,8 +58,8 @@ struct ItemList;
 pub fn item_list(client: &Client, board_id: String) -> Vec<Item> {
     let variables = item_list::Variables {
         board_id: Some(board_id.parse::<i64>().expect("can convert to i64")),
-        limit: Some(50),
-        newest_first: Some(true),
+        limit: Some(100),
+        newest_first: Some(false),
         page: Some(1),
     };
     let res: Response<item_list::ResponseData> =
@@ -86,6 +86,19 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
             let mut item = Item::new();
             item.id = i.id.clone();
             item.name = i.name.clone();
+            //Subscribers
+            item.subscribers = i
+            .subscribers
+            .iter()
+            .map(|sub| {
+                let user = sub.clone().unwrap();
+                User {
+                    id: user.id,
+                    email: "".to_string(),
+                    name: "".to_string(),
+                }
+            })
+            .collect::<Vec<User>>();
             item
         })
         .collect::<Vec<Item>>();
@@ -298,4 +311,27 @@ pub fn change_status(app : &app::App, value : String) {
     };
     
     monday::query::<ChangeStatus>(&app.client, variables).expect("Could not execute query.");
+}
+
+//Get current user
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/current_user.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct CurrentUser;
+
+pub fn current_user(client : &Client) -> User {
+        
+    let variables = current_user::Variables {};
+    
+    let res = monday::query::<CurrentUser>(client, variables).expect("Could not execute query.");
+    let data = res.data.expect("no data in response");
+    let me = data.me.clone().unwrap(); 
+    User {
+        id : me.id.clone(), 
+        email : me.email.clone(), 
+        name : me.name.clone()
+    }
 }

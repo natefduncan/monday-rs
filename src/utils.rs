@@ -1,4 +1,6 @@
 use super::objects;
+use super::app; 
+use crossterm::event::KeyCode; 
 use aho_corasick::AhoCorasickBuilder;
 
 fn search(query: String, vector: &Vec<String>) -> Vec<usize> {
@@ -75,14 +77,27 @@ pub fn filter_boards(boards: &Vec<objects::Board>, search: &Vec<char>) -> Vec<ob
     return output;
 }
 
-pub fn filter_items(items: &Vec<objects::Item>, search: &Vec<char>) -> Vec<objects::Item> {
-    let output: Vec<objects::Item>;
+pub fn filter_items(app : &app::App) -> Vec<objects::Item> {
+    let mut output: Vec<objects::Item>;
+
     //Filter by search element
-    if search.len() > 0 {
-        let search_string: String = search.iter().map(|c| c.to_string()).collect::<String>();
-        output = search_items(search_string, items);
+    if app.key_input.len() > 0 {
+        let search_string: String = app.key_input.iter().map(|c| c.to_string()).collect::<String>();
+        output = search_items(search_string, &app.items);
     } else {
-        output = items.clone();
+        output = app.items.clone();
+    }
+
+    //Check for filter by assigned
+    if app.f != KeyCode::Null {
+        match app.f {
+            KeyCode::F(2) => {
+                output = output.iter().filter(|item| {
+                    item.subscribers.iter().any(|sub| sub.id == app.current_user.id.clone())
+                }).cloned().collect::<Vec<objects::Item>>(); 
+            }, 
+            _ => {}
+        }
     }
     return output;
 }

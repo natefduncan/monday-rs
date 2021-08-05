@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         terminal.draw(|mut rect| match app.active_menu_item {
             views::MenuItem::Home => views::Home::render(&mut rect, &app),
             views::MenuItem::Boards => views::BoardList::render(&mut rect, &app),
-            views::MenuItem::Items => views::ItemList::render(&mut rect, &app),
+            views::MenuItem::Items => views::ItemList::render(&mut rect, &mut app),
             views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
             views::MenuItem::ItemOptions => views::ItemOptions::render(&mut rect, &mut app),
             views::MenuItem::ItemUpdate => views::ItemUpdate::render(&mut rect, &mut app),

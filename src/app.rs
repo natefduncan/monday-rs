@@ -1,6 +1,7 @@
 use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen},
+    event::{KeyCode}, 
 };
 use reqwest;
 use std::io;
@@ -24,7 +25,10 @@ pub struct App {
     pub menu_titles: Vec<String>,
     pub status_labels: Vec<objects::Label>, 
     pub cache : cache::Cache, 
+    pub f : KeyCode, 
+    pub current_user : objects::User, 
 }
+
 
 impl App {
     pub fn new() -> App {
@@ -43,14 +47,15 @@ impl App {
             item_detail: objects::Item::new(),
             active_menu_item: active_menu_item,
             key_input: key_input,
-            client: client,
+            client: client.clone(),
             menu_titles: vec!["Home", "Boards", "Items", "Item Detail"]
                 .iter()
                 .map(|x| x.to_string())
                 .collect::<Vec<String>>(),
             status_labels : Vec::new(), 
-            cache : cache::Cache::new()
-
+            cache : cache::Cache::new(), 
+            f : KeyCode::Null,
+            current_user : queries::current_user(&client.clone())
         }
     }
 }
