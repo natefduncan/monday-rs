@@ -1,0 +1,8 @@
+query GroupList($board_id:Int) {
+    boards(ids:[$board_id]) {
+        groups {
+            id
+            title
+        }
+    }
+}

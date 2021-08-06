@@ -8,6 +8,7 @@ use serde_json::{
     value::Value
 }; 
 
+
 //BOARD LIST
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -46,6 +47,51 @@ fn parse_board_list_response(res: Response<board_list::ResponseData>) -> Vec<Boa
     return boards;
 }
 
+//GROUP LIST
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/group_list.graphql",
+    response_derives = "Debug"
+)]
+struct GroupList;
+
+pub fn group_list(client: &Client, board_id : String) -> Vec<Group> {
+    let variables = group_list::Variables { board_id : Some(board_id.parse::<i64>().unwrap()) };
+    let res: Response<group_list::ResponseData> =
+        monday::query::<GroupList>(&client, variables).expect("Could not execute query.");
+    let groups = parse_group_list_response(res);
+    return groups;
+}
+
+fn parse_group_list_response(res: Response<group_list::ResponseData>) -> Vec<Group> {
+    let data = res.data.expect("missing response data.");
+    let board = data
+        .boards
+        .unwrap()
+        .into_iter()
+        .nth(0)
+        .expect("missing first value")
+        .unwrap();
+    let groups: Vec<Group> = match board.groups {
+        Some(arr) => arr
+            .iter()
+            .map(|group| match group {
+                Some(b) => Group {
+                    title: b.title.to_owned(),
+                    id: b.id.to_owned(),
+                },
+                None => Group {
+                    title: "No Title".to_string(),
+                    id: "No ID".to_string(),
+                },
+            })
+            .collect(),
+        None => vec![],
+    };
+    return groups;
+}
+
 //ITEM LIST
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -55,9 +101,10 @@ fn parse_board_list_response(res: Response<board_list::ResponseData>) -> Vec<Boa
 )]
 struct ItemList;
 
-pub fn item_list(client: &Client, board_id: String) -> Vec<Item> {
+pub fn item_list(client: &Client, board_id: String, group_id: String) -> Vec<Item> {
     let variables = item_list::Variables {
         board_id: Some(board_id.parse::<i64>().expect("can convert to i64")),
+        group_id: Some(group_id), 
         limit: Some(100),
         newest_first: Some(false),
         page: Some(1),
@@ -76,18 +123,18 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
         .nth(0)
         .expect("missing first value")
         .unwrap();
-    //ITEMS
-    let items = board
-        .items
-        .unwrap()
-        .iter()
-        .map(|item| {
-            let i = item.clone().unwrap();
-            let mut item = Item::new();
-            item.id = i.id.clone();
-            item.name = i.name.clone();
+    let mut items : Vec<Item> = vec![]; 
+
+    //GROUPS
+    for group in board.groups.unwrap() {
+        let g = group.clone().unwrap();
+        for item in g.items.unwrap() {
+            let i = item.clone().unwrap(); 
+            let mut item_new = Item::new(); 
+            item_new.id = i.id.clone();
+            item_new.name = i.name.clone();
             //Subscribers
-            item.subscribers = i
+            item_new.subscribers = i
             .subscribers
             .iter()
             .map(|sub| {
@@ -99,10 +146,10 @@ fn parse_board_detail_response(res: Response<item_list::ResponseData>) -> Vec<It
                 }
             })
             .collect::<Vec<User>>();
-            item
-        })
-        .collect::<Vec<Item>>();
-    return items;
+            items.push(item_new); 
+        }
+    }
+    return items; 
 }
 
 //ITEM DETAIL
@@ -143,6 +190,7 @@ fn parse_item_detail_response(res: Response<item_detail::ResponseData>) -> Item 
     //Group
     output.group = Group {
         title: item.group.unwrap().title,
+        id : "".to_string()
     };
     //Board
     output.board = Board {

@@ -1,13 +1,12 @@
-query ItemList($board_id:Int, $limit:Int, $newest_first:Boolean, $page:Int) {
+query ItemList($board_id:Int, $group_id:String, $limit:Int, $newest_first:Boolean, $page:Int) {
   boards(ids:[$board_id]) {
-    items(limit:$limit,newest_first:$newest_first,page:$page) {
-        name
-        id
-        group {
-            title
-        }
-        subscribers {
-          id
+    groups(ids:[$group_id]) {
+        items(limit:$limit,newest_first:$newest_first,page:$page) {
+            name
+            id
+            subscribers {
+                id
+            }
         }
     }
   }
