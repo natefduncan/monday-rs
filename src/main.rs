@@ -37,7 +37,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             views::MenuItem::ItemOptions => views::ItemOptions::render(&mut rect, &mut app),
             views::MenuItem::ItemUpdate => views::ItemUpdate::render(&mut rect, &mut app),
             views::MenuItem::NewItem => views::NewItem::render(&mut rect, &mut app), 
-            views::MenuItem::ColumnOptions => views::ColumnOptions::render(&mut rect, &mut app),
+            views::MenuItem::UserColumnOptions => views::UserColumnOptions::render(&mut rect, &mut app),
+            views::MenuItem::UserOptions => views::UserOptions::render(&mut rect, &mut app),
+            views::MenuItem::StatusColumnOptions => views::StatusColumnOptions::render(&mut rect, &mut app),
             views::MenuItem::StatusOptions => views::StatusOptions::render(&mut rect, &mut app)
         })?;
 
@@ -74,11 +76,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     views::MenuItem::NewItem => {
                         views::NewItem.process_input_event(event, &mut app)
                     }, 
-                    views::MenuItem::ColumnOptions => {
-                        views::ColumnOptions.process_input_event(event, &mut app)
+                    views::MenuItem::StatusColumnOptions => {
+                        views::StatusColumnOptions.process_input_event(event, &mut app)
                     }, 
                     views::MenuItem::StatusOptions => {
                         views::StatusOptions.process_input_event(event, &mut app)
+                    },
+                    views::MenuItem::UserColumnOptions => {
+                        views::UserColumnOptions.process_input_event(event, &mut app)
+                    }, 
+                    views::MenuItem::UserOptions => {
+                        views::UserOptions.process_input_event(event, &mut app)
                     } 
                 }
             }

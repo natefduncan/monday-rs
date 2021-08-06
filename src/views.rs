@@ -28,7 +28,9 @@ pub enum MenuItem {
     ItemOptions,
     ItemUpdate,
     NewItem, 
-    ColumnOptions, 
+    UserOptions, 
+    UserColumnOptions, 
+    StatusColumnOptions, 
     StatusOptions, 
 }
 
@@ -44,7 +46,9 @@ impl From<MenuItem> for usize {
             MenuItem::ItemDetail => 4,
             MenuItem::ItemOptions => 4,
             MenuItem::ItemUpdate => 4,
-            MenuItem::ColumnOptions => 4, 
+            MenuItem::UserOptions => 4, 
+            MenuItem::UserColumnOptions => 4, 
+            MenuItem::StatusColumnOptions => 4, 
             MenuItem::StatusOptions => 4
         }
     }
@@ -627,7 +631,7 @@ impl ItemOptions {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
 
-        let items = [ListItem::new("Add Update"), ListItem::new("Change Status"), ListItem::new("Move to Group")];
+        let items = [ListItem::new("Add Update"), ListItem::new("Change Status"), ListItem::new("Move to Group"), ListItem::new("Assign User")];
 
         let option_list = List::new(items)
             .block(Block::default().title("Options").borders(Borders::ALL))
@@ -648,9 +652,9 @@ impl ItemOptions {
 
     pub fn keyup(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(2)),
-            1 => app.list_state.select(Some(0)),
+            0 => app.list_state.select(Some(3)),
             2 => app.list_state.select(Some(1)),
+            3 => app.list_state.select(Some(2)), 
             _ => app.list_state.select(Some(0)),
         }
     }
@@ -659,7 +663,7 @@ impl ItemOptions {
         match app.list_state.selected().unwrap() {
             0 => app.list_state.select(Some(1)),
             1 => app.list_state.select(Some(2)),
-            2 => app.list_state.select(Some(0)),
+            2 => app.list_state.select(Some(3)),
             _ => app.list_state.select(Some(0)),
         }
     }
@@ -673,15 +677,26 @@ impl ItemOptions {
             KeyCode::Enter => match app.list_state.selected().unwrap() {
                 0 => app.active_menu_item = MenuItem::ItemUpdate,
                 1 => {
-                    if app.cache.board_has_meta(app.item_detail.board.id.clone()) {
-                        app.status_labels = queries::board_columns(&app.client, app.item_detail.board.id.clone()); 
+                    let board_cache = app.cache.get_board_meta(app.board_detail.id.clone());
+                    if board_cache.status_column_id != "".to_string() {
+                        app.status_labels = queries::board_columns(&app.client, app.board_detail.id.clone()); 
                         app.active_menu_item = MenuItem::StatusOptions; 
                     } else {
-                        app.active_menu_item = MenuItem::ColumnOptions; 
+                        app.active_menu_item = MenuItem::StatusColumnOptions; 
                     }
                 }, 
                 2 => {
                     app.active_menu_item = MenuItem::GroupsForMove; 
+                }, 
+                3 => {
+                    let board_cache = app.cache.get_board_meta(app.board_detail.id.clone());
+                    if board_cache.user_column_id != "".to_string() {
+                        app.users = queries::user_list(&app); 
+                        app.list_state.select(Some(0)); 
+                        app.active_menu_item = MenuItem::UserOptions; 
+                    } else {
+                        app.active_menu_item = MenuItem::UserColumnOptions; 
+                    }
                 }
                 _ => {}
             },
@@ -770,9 +785,87 @@ impl ItemUpdate {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct ColumnOptions;
+pub struct UserColumnOptions;
 
-impl ColumnOptions {
+impl UserColumnOptions {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        // Find status column
+        let user_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("multiple-person")).cloned().collect::<Vec<objects::ColumnValue>>();
+        let items = user_columns.iter().map(|x| ListItem::new(x.title.clone())).collect::<Vec<ListItem>>(); 
+
+        let option_list = List::new(items)
+            .block(Block::default().title("Select User Column").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        let user_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("multiple-person")).cloned().collect::<Vec<objects::ColumnValue>>();
+        if let Some(selected) = app.list_state.selected() {
+            if selected == 0 {
+                app.list_state.select(Some(user_columns.len() - 1));
+            } else {
+                app.list_state.select(Some(selected - 1));
+            }
+        }
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        let user_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("multiple-person")).cloned().collect::<Vec<objects::ColumnValue>>();
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= user_columns.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected + 1));
+            }
+        }
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Enter => {
+                let user_columns : Vec<objects::ColumnValue> = app.item_detail.column_values.iter().filter(|cv| cv.type_ == String::from("multiple-person")).cloned().collect::<Vec<objects::ColumnValue>>();
+                let column = user_columns.get(
+                    app.list_state.selected().unwrap()
+                ).unwrap();
+                let current_board_meta = app.cache.get_board_meta(app.board_detail.id.clone()); 
+                app.cache.update_board_meta(cache::BoardMeta {
+                    id : app.item_detail.board.id.clone(), 
+                    status_column_id : current_board_meta.status_column_id.clone(), 
+                    user_column_id : column.id.clone()
+                }); 
+                cache::write(&app.cache).expect("could not write cache");
+                app.users = queries::user_list(&app); 
+                app.list_state.select(Some(0)); 
+                app.active_menu_item = MenuItem::UserOptions; 
+            }, 
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct StatusColumnOptions;
+
+impl StatusColumnOptions {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
@@ -831,14 +924,80 @@ impl ColumnOptions {
                 let column = status_columns.get(
                     app.list_state.selected().unwrap()
                 ).unwrap();
+                let current_board_meta = app.cache.get_board_meta(app.board_detail.id.clone()); 
                 app.cache.update_board_meta(cache::BoardMeta {
                     id : app.item_detail.board.id.clone(), 
-                    status_column_id : column.id.clone()
+                    status_column_id : column.id.clone(), 
+                    user_column_id : current_board_meta.user_column_id.clone()
                 }); 
                 cache::write(&app.cache).expect("could not write cache");
                 app.status_labels = queries::board_columns(&app.client, app.item_detail.board.id.clone()); 
                 app.active_menu_item = MenuItem::StatusOptions; 
             }, 
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct UserOptions;
+
+impl UserOptions {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        let chunks = components::get_default_chunks(&rect);
+        let items = app.users.iter().map(|x| ListItem::new(x.name.clone().replace("\"", ""))).collect::<Vec<ListItem>>(); 
+
+        let option_list = List::new(items)
+            .block(Block::default().title("Assign User").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+
+        rect.render_stateful_widget(option_list, chunks[1], &mut app.list_state);
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::ItemOptions;
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            if selected == 0 {
+                app.list_state.select(Some(app.users.len() - 1));
+            } else {
+                app.list_state.select(Some(selected - 1));
+            }
+        }
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            if selected >= app.users.len() - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected + 1));
+            }
+        }
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Enter => {
+                let selected_user = app.users.get(
+                    app.list_state.selected().unwrap()
+                ).unwrap(); 
+                queries::assign_user(app, selected_user.id.to_string()); 
+                app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone()); 
+                app.active_menu_item = MenuItem::ItemDetail; 
+            },
             _ => {}
         }
     }

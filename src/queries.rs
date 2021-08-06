@@ -427,3 +427,67 @@ pub fn move_item(app : &app::App, group_id : String) {
     let res = monday::query::<MoveItem>(&app.client, variables).expect("Could not execute query.");
     let _data = res.data.expect("no data in response");
 }
+
+
+//USER LIST
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/user_list.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct UserList;
+
+pub fn user_list(app : &app::App) -> Vec<User> {
+        
+    let variables = user_list::Variables {
+        board_id : Some(app.board_detail.id.parse::<i64>().unwrap()), 
+    };
+    
+    let res = monday::query::<UserList>(&app.client, variables).expect("Could not execute query.");
+    let data = res.data.expect("no data in response");
+    let board = data
+        .boards
+        .unwrap()
+        .into_iter()
+        .nth(0)
+        .expect("missing first value")
+        .unwrap();
+    board.subscribers.iter().map(|sub| {
+        let s = sub.clone().unwrap();
+        User {
+            id : s.id.clone(),
+            name : s.name.clone(), 
+            email : s.email.clone(),
+        }
+    }).collect::<Vec<User>>()
+}
+
+
+//Change user column
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/assign_user.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct AssignUser;
+
+pub fn assign_user(app : &app::App, value : String) {
+    let board_cache = app
+        .cache
+        .boards
+        .iter()
+        .filter(|board| board.id == app.item_detail.board.id)
+        .nth(0)
+        .expect("no cache for board");
+        
+    let variables = assign_user::Variables {
+        item_id : Some(app.item_detail.id.parse::<i64>().unwrap()), 
+        column_id : board_cache.user_column_id.clone(), 
+        board_id : app.board_detail.id.parse::<i64>().unwrap(), 
+        value : format!("{{\"personsAndTeams\":[{{\"id\": {}, \"kind\": \"person\"}}]}}", value.replace("\"", "")) 
+    };
+    
+    monday::query::<AssignUser>(&app.client, variables).expect("Could not execute query.");
+}

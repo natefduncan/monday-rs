@@ -27,6 +27,7 @@ pub struct App {
     pub client: reqwest::blocking::Client,
     pub menu_titles: Vec<String>,
     pub status_labels: Vec<objects::Label>, 
+    pub users : Vec<objects::User>, 
     pub cache : cache::Cache, 
     pub f : KeyCode, 
     pub current_user : objects::User, 
@@ -60,6 +61,7 @@ impl App {
                 .map(|x| x.to_string())
                 .collect::<Vec<String>>(),
             status_labels : Vec::new(), 
+            users : Vec::new(),
             cache : cache::Cache::new(), 
             f : KeyCode::Null,
             current_user : queries::current_user(&client.clone())
