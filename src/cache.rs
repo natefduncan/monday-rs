@@ -82,10 +82,13 @@ pub fn read() -> Cache {
 
 pub fn write(cache: &Cache) -> Result<(), std::io::Error> {
     let file_path = get_cache_path();
+    if exists() {
+        std::fs::remove_file(file_path.clone()).expect("could not remove file");
+    }
     let file = OpenOptions::new()
         .read(true)
         .write(true)
-        .create(true)
+        .create_new(true)
         .open(file_path)?;
     serde_json::to_writer(file, &cache).expect("could not write to file");
     Ok(())
