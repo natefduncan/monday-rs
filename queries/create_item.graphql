@@ -1,0 +1,6 @@
+
+mutation CreateItem($item_name:String, $board_id:Int!, $group_id:String) {
+    create_item(item_name:$item_name, board_id:$board_id, group_id:$group_id) {
+        id
+    }
+}

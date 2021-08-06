@@ -26,8 +26,9 @@ pub enum MenuItem {
     ItemDetail,
     ItemOptions,
     ItemUpdate,
+    NewItem, 
     ColumnOptions, 
-    StatusOptions
+    StatusOptions, 
 }
 
 impl From<MenuItem> for usize {
@@ -37,6 +38,7 @@ impl From<MenuItem> for usize {
             MenuItem::Boards => 1,
             MenuItem::Groups => 2,
             MenuItem::Items => 3,
+            MenuItem::NewItem => 4, 
             MenuItem::ItemDetail => 4,
             MenuItem::ItemOptions => 4,
             MenuItem::ItemUpdate => 4,
@@ -310,6 +312,7 @@ impl GroupList {
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
+        app.group_detail = selected_group.clone(); 
         app.items = queries::item_list(&app.client, app.board_detail.id.clone(), selected_group.id);
         app.key_input = Vec::new();
         app.list_state.select(Some(0));
@@ -415,6 +418,9 @@ impl ItemList {
             KeyCode::Enter => self.keyenter(app),
             KeyCode::F(1) => app.f = KeyCode::F(1), //No Filter
             KeyCode::F(2) => app.f = KeyCode::F(2), //Filter By Assigned
+            KeyCode::F(3) => { //Create Item in Current Group
+                app.active_menu_item = MenuItem::NewItem; 
+            }
             _ => {}
         }
     }
@@ -839,6 +845,80 @@ impl StatusOptions {
                 app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone()); 
                 app.active_menu_item = MenuItem::ItemDetail; 
             },
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct NewItem;
+
+impl NewItem {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+
+        //Key input as string
+        let update_text: String = app
+            .key_input
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<String>();
+
+        //Span Vec
+        let update_span = vec![Spans::from(vec![
+            Span::styled(
+                "Item Name: ",
+                Style::default()
+                    .add_modifier(Modifier::ITALIC)
+                    .fg(Color::LightBlue),
+            ),
+            Span::raw(update_text),
+        ])];
+
+        let p = Paragraph::new(update_span)
+            .style(Style::default())
+            .alignment(Alignment::Left)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .style(Style::default().fg(Color::White))
+                    .title("Create Item")
+                    .border_type(BorderType::Plain),
+            )
+            .wrap(Wrap { trim: true });
+
+        rect.render_widget(p, chunks[1]);
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.key_input = Vec::new();
+        app.active_menu_item = MenuItem::ItemDetail;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.key_input = Vec::new();
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => {
+                //Key input as string
+                let item_text: String = app
+                    .key_input
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<String>();
+                // GraphQL create item
+                let new_item = queries::create_item(item_text, &app);
+                // Get Item Detail again
+                app.item_detail = queries::item_detail(&app.client, new_item.id.clone());
+                //Change menu back to Item Detail
+                app.active_menu_item = MenuItem::ItemDetail;
+            }
             _ => {}
         }
     }
