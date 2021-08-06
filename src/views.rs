@@ -21,6 +21,7 @@ use tui::{
 pub enum MenuItem {
     Home,
     Boards,
+    Groups, 
     Items,
     ItemDetail,
     ItemOptions,
@@ -34,12 +35,13 @@ impl From<MenuItem> for usize {
         match input {
             MenuItem::Home => 0,
             MenuItem::Boards => 1,
-            MenuItem::Items => 2,
-            MenuItem::ItemDetail => 3,
-            MenuItem::ItemOptions => 3,
-            MenuItem::ItemUpdate => 3,
-            MenuItem::ColumnOptions => 3, 
-            MenuItem::StatusOptions => 3
+            MenuItem::Groups => 2,
+            MenuItem::Items => 3,
+            MenuItem::ItemDetail => 4,
+            MenuItem::ItemOptions => 4,
+            MenuItem::ItemUpdate => 4,
+            MenuItem::ColumnOptions => 4, 
+            MenuItem::StatusOptions => 4
         }
     }
 }
@@ -202,7 +204,7 @@ impl BoardList {
     }
 
     pub fn keyright(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Items;
+        app.active_menu_item = MenuItem::Groups;
     }
 
     pub fn keyleft(self, app: &mut app::App) {
@@ -211,12 +213,104 @@ impl BoardList {
 
     pub fn keyenter(self, app: &mut app::App) {
         let board_filtered = utils::filter_boards(&app.boards, &app.key_input);
-        app.active_menu_item = MenuItem::Items;
+        app.active_menu_item = MenuItem::Groups;
         let selected_board = board_filtered
             .get(app.list_state.selected().unwrap())
             .unwrap()
             .clone();
-        app.items = queries::item_list(&app.client, selected_board.id);
+        app.board_detail = selected_board.clone(); 
+        app.groups = queries::group_list(&app.client, selected_board.id); 
+        app.key_input = Vec::new();
+        app.list_state.select(Some(0));
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => self.keyenter(app),
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct GroupList;
+
+impl GroupList {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        //Default chunks, search, and menu
+        let chunks = components::get_default_chunks(&rect);
+        let search_block = components::get_search_block(&app);
+        let menu_block = components::get_menu_block(&app);
+
+        //Filter items
+        let filtered = utils::filter_groups(&app);
+        let board_block = Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::White))
+            .title("Group")
+            .border_type(BorderType::Plain);
+
+        //Create item list
+        let list_items: Vec<ListItem> = filtered
+            .iter()
+            .map(|x| ListItem::new(x.title.to_owned()))
+            .collect();
+
+        let item_list = List::new(list_items).block(board_block).highlight_style(
+            Style::default()
+                .bg(Color::Yellow)
+                .fg(Color::Black)
+                .add_modifier(Modifier::BOLD),
+        );
+
+        //Render components
+        rect.render_widget(menu_block, chunks[0]);
+        rect.render_stateful_widget(item_list, chunks[1], &mut app.list_state.clone());
+        rect.render_widget(search_block, chunks[2]);
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let list_length = utils::filter_groups(app).len();
+            if selected > 0 {
+                app.list_state.select(Some(selected - 1));
+            } else {
+                app.list_state.select(Some(list_length - 1));
+            }
+        }
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        if let Some(selected) = app.list_state.selected() {
+            let list_length = utils::filter_groups(app).len();
+            if selected >= list_length - 1 {
+                app.list_state.select(Some(0));
+            } else {
+                app.list_state.select(Some(selected + 1));
+            }
+        }
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Items;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Boards;
+    }
+
+    pub fn keyenter(self, app: &mut app::App) {
+        let filtered = utils::filter_groups(&app);
+        app.active_menu_item = MenuItem::Items;
+        let selected_group = filtered
+            .get(app.list_state.selected().unwrap())
+            .unwrap()
+            .clone();
+        app.items = queries::item_list(&app.client, app.board_detail.id.clone(), selected_group.id);
         app.key_input = Vec::new();
         app.list_state.select(Some(0));
     }
@@ -297,7 +391,7 @@ impl ItemList {
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::Boards;
+        app.active_menu_item = MenuItem::Groups;
     }
 
     pub fn keyenter(self, app: &mut app::App) {
