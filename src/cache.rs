@@ -2,6 +2,7 @@ use dirs::home_dir;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::fs::OpenOptions;
+use super::app; 
 
 // To store status column
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,13 +18,14 @@ impl BoardMeta {
             id: String::from(""),
             status_column_id: String::from(""),
             user_column_id : String::from("")
-        }
+        } 
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Cache {
     pub boards: Vec<BoardMeta>,
+    pub app_state : app::AppState
 }
 
 impl Cache {
@@ -32,7 +34,7 @@ impl Cache {
             return read();
         } else {
             create().expect("could not create .monday dir");
-            let cache = Cache { boards: vec![] };
+            let cache = Cache { boards: vec![], app_state : app::AppState::new()};
             write(&cache.clone()).expect("could not write");
             return cache;
         }
