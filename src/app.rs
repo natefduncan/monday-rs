@@ -17,6 +17,8 @@ use super::cache;
 pub struct App {
     pub list_state: ListState,
     pub boards: Vec<objects::Board>,
+    pub board_detail : objects::Board, 
+    pub groups : Vec<objects::Group>, 
     pub items: Vec<objects::Item>,
     pub item_detail: objects::Item,
     pub active_menu_item: views::MenuItem,
@@ -38,17 +40,20 @@ impl App {
         let key_input: Vec<char> = Vec::new();
         let client = monday::get_client().expect("Could not get client.");
         let boards: Vec<objects::Board> = queries::board_list(&client);
+        let groups : Vec<objects::Group> = Vec::new(); 
         let items: Vec<objects::Item> = Vec::new();
  
         App {
             list_state: list_state,
             boards: boards,
+            board_detail : objects::Board::new(), 
+            groups : groups, 
             items: items,
             item_detail: objects::Item::new(),
             active_menu_item: active_menu_item,
             key_input: key_input,
             client: client.clone(),
-            menu_titles: vec!["Home", "Boards", "Items", "Item Detail"]
+            menu_titles: vec!["Home", "Boards", "Groups", "Items", "Item Detail"]
                 .iter()
                 .map(|x| x.to_string())
                 .collect::<Vec<String>>(),
