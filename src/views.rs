@@ -15,9 +15,10 @@ use tui::{
     text::{Span, Spans},
     widgets::{Block, BorderType, Borders, Cell, List, ListItem, Paragraph, Row, Table, Wrap},
 };
+use serde::{Serialize, Deserialize}; 
 
 //Menu enum
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum MenuItem {
     Home,
     Boards,
