@@ -55,6 +55,16 @@ pub fn search_boards(query: String, boards: &Vec<objects::Board>) -> Vec<objects
     return filtered;
 }
 
+pub fn search_groups(query: String, groups: &Vec<objects::Group>) -> Vec<objects::Group> {
+    let vec_string: Vec<String> = groups
+        .iter()
+        .map(|group| group.title.clone())
+        .collect::<Vec<String>>();
+    let search_bool = search(query, &vec_string);
+    let filtered = filter_by_matches::<objects::Group>(&groups, &search_bool);
+    return filtered;
+}
+
 pub fn search_items(query: String, items: &Vec<objects::Item>) -> Vec<objects::Item> {
     let vec_string: Vec<String> = items
         .iter()
@@ -73,6 +83,18 @@ pub fn filter_boards(boards: &Vec<objects::Board>, search: &Vec<char>) -> Vec<ob
         output = search_boards(search_string, boards);
     } else {
         output = boards.clone();
+    }
+    return output;
+}
+
+pub fn filter_groups(app : &app::App) -> Vec<objects::Group> {
+    let output: Vec<objects::Group>;
+    //Filter by search element
+    if app.key_input.len() > 0 {
+        let search_string: String = app.key_input.iter().map(|c| c.to_string()).collect::<String>();
+        output = search_groups(search_string, &app.groups);
+    } else {
+        output = app.groups.clone();
     }
     return output;
 }
