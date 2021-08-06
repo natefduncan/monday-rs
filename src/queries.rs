@@ -383,3 +383,27 @@ pub fn current_user(client : &Client) -> User {
         name : me.name.clone()
     }
 }
+
+//CREATE ITEM
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/create_item.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct CreateItem;
+
+pub fn create_item(item_name : String, app : &app::App) -> Item {
+        
+    let variables = create_item::Variables {
+        item_name : Some(item_name), 
+        board_id : app.board_detail.id.parse::<i64>().unwrap(), 
+        group_id : Some(app.group_detail.id.clone())
+    };
+    
+    let res = monday::query::<CreateItem>(&app.client, variables).expect("Could not execute query.");
+    let data = res.data.expect("no data in response");
+    let mut item = Item::new();
+    item.id = data.create_item.unwrap().id.clone(); 
+    item
+}
