@@ -22,6 +22,7 @@ pub enum MenuItem {
     Home,
     Boards,
     Groups, 
+    GroupsForMove, 
     Items,
     ItemDetail,
     ItemOptions,
@@ -37,6 +38,7 @@ impl From<MenuItem> for usize {
             MenuItem::Home => 0,
             MenuItem::Boards => 1,
             MenuItem::Groups => 2,
+            MenuItem::GroupsForMove => 4, 
             MenuItem::Items => 3,
             MenuItem::NewItem => 4, 
             MenuItem::ItemDetail => 4,
@@ -331,6 +333,57 @@ impl GroupList {
 }
 
 #[derive(Debug, Copy, Clone)]
+pub struct GroupListForMove;
+
+impl GroupListForMove {
+    pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
+        GroupList::render(rect, app); 
+    }
+
+    pub fn keyup(self, app: &mut app::App) {
+        GroupList.keyup(app); 
+    }
+
+    pub fn keydown(self, app: &mut app::App) {
+        GroupList.keydown(app); 
+    }
+
+    pub fn keyright(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::Home;
+    }
+
+    pub fn keyleft(self, app: &mut app::App) {
+        app.active_menu_item = MenuItem::ItemDetail;
+    }
+
+    pub fn keyenter(self, app: &mut app::App) {
+        let filtered = utils::filter_groups(&app);
+        app.active_menu_item = MenuItem::ItemDetail;
+        let selected_group = filtered
+            .get(app.list_state.selected().unwrap())
+            .unwrap()
+            .clone();
+        queries::move_item(&app, selected_group.id.clone()); 
+        app.item_detail = queries::item_detail(&app.client, app.item_detail.id.clone()); 
+        app.group_detail = selected_group.clone(); 
+        app.items = queries::item_list(&app.client, app.board_detail.id.clone(), selected_group.id);
+        app.key_input = Vec::new();
+        app.list_state.select(Some(0));
+    }
+
+    pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
+        match event.code {
+            KeyCode::Up => self.keyup(app),
+            KeyCode::Down => self.keydown(app),
+            KeyCode::Left => self.keyleft(app),
+            KeyCode::Right => self.keyright(app),
+            KeyCode::Enter => self.keyenter(app),
+            _ => {}
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
 pub struct ItemList;
 
 impl ItemList {
@@ -574,7 +627,7 @@ impl ItemOptions {
         //Default chunks, search, and menu
         let chunks = components::get_default_chunks(&rect);
 
-        let items = [ListItem::new("Add Update"), ListItem::new("Change Status")];
+        let items = [ListItem::new("Add Update"), ListItem::new("Change Status"), ListItem::new("Move to Group")];
 
         let option_list = List::new(items)
             .block(Block::default().title("Options").borders(Borders::ALL))
@@ -595,8 +648,9 @@ impl ItemOptions {
 
     pub fn keyup(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
-            0 => app.list_state.select(Some(1)),
+            0 => app.list_state.select(Some(2)),
             1 => app.list_state.select(Some(0)),
+            2 => app.list_state.select(Some(1)),
             _ => app.list_state.select(Some(0)),
         }
     }
@@ -604,7 +658,8 @@ impl ItemOptions {
     pub fn keydown(self, app: &mut app::App) {
         match app.list_state.selected().unwrap() {
             0 => app.list_state.select(Some(1)),
-            1 => app.list_state.select(Some(0)),
+            1 => app.list_state.select(Some(2)),
+            2 => app.list_state.select(Some(0)),
             _ => app.list_state.select(Some(0)),
         }
     }
@@ -625,6 +680,9 @@ impl ItemOptions {
                         app.active_menu_item = MenuItem::ColumnOptions; 
                     }
                 }, 
+                2 => {
+                    app.active_menu_item = MenuItem::GroupsForMove; 
+                }
                 _ => {}
             },
             KeyCode::Char('U') => {
