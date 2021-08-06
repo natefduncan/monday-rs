@@ -1,0 +1,9 @@
+query UserList($board_id:Int) {
+    boards(ids:[$board_id]) {
+        subscribers {
+            id
+            name
+            email
+        }
+    }
+}

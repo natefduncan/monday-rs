@@ -1,0 +1,7 @@
+mutation AssignUser($item_id:Int, $column_id:String!, $board_id:Int!, $value:JSON!) {
+    change_column_value(item_id:$item_id, column_id:$column_id, board_id:$board_id, value:$value) {
+        id
+        name
+    }
+}
+
