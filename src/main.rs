@@ -31,6 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             views::MenuItem::Home => views::Home::render(&mut rect, &app),
             views::MenuItem::Boards => views::BoardList::render(&mut rect, &app),
             views::MenuItem::Groups => views::GroupList::render(&mut rect, &mut app), 
+            views::MenuItem::GroupsForMove => views::GroupListForMove::render(&mut rect, &mut app),
             views::MenuItem::Items => views::ItemList::render(&mut rect, &mut app),
             views::MenuItem::ItemDetail => views::ItemDetail::render(&mut rect, &app),
             views::MenuItem::ItemOptions => views::ItemOptions::render(&mut rect, &mut app),
@@ -60,6 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     views::MenuItem::Items => views::ItemList.process_input_event(event, &mut app),
                     views::MenuItem::Groups => views::GroupList.process_input_event(event, &mut app), 
+                    views::MenuItem::GroupsForMove => views::GroupListForMove.process_input_event(event, &mut app), 
                     views::MenuItem::ItemDetail => {
                         views::ItemDetail.process_input_event(event, &mut app)
                     }
