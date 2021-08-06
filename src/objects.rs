@@ -37,7 +37,7 @@ pub struct Group {
     // pub archived: bool,
     // pub color: String,
     // pub deleted: bool,
-    // pub id: String,
+    pub id: String,
     // pub items: Vec<Item>,
     // pub position: String,
     pub title: String,
@@ -46,6 +46,7 @@ pub struct Group {
 impl Group {
     pub fn new() -> Group {
         Group {
+            id : "".to_string(), 
             title: "".to_string(),
         }
     }
