@@ -1,0 +1,5 @@
+mutation MoveItem($item_id:Int, $group_id:String!) {
+    move_item_to_group(item_id:$item_id, group_id:$group_id) {
+        id
+    }
+}

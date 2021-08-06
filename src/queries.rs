@@ -407,3 +407,23 @@ pub fn create_item(item_name : String, app : &app::App) -> Item {
     item.id = data.create_item.unwrap().id.clone(); 
     item
 }
+
+//MOVE ITEM
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "schema.json",
+    query_path = "queries/move_item.graphql",
+    response_derives = "Debug,Clone"
+)]
+struct MoveItem;
+
+pub fn move_item(app : &app::App, group_id : String) {
+        
+    let variables = move_item::Variables {
+        item_id : Some(app.item_detail.id.parse::<i64>().unwrap()), 
+        group_id : group_id
+    };
+    
+    let res = monday::query::<MoveItem>(&app.client, variables).expect("Could not execute query.");
+    let _data = res.data.expect("no data in response");
+}
