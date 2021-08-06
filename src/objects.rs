@@ -1,4 +1,6 @@
-// #[derive(Debug, Clone)]
+use serde::{Serialize, Deserialize}; 
+
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct ActivityLogType {
 //     account_id: String,
 //     created_at: String,
@@ -9,14 +11,14 @@
 //     user_id: String,
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // enum BoardKind {
 //     Public,
 //     Private,
 //     Share,
 // }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Column {
     // archived: bool,
     // id: String,
@@ -26,13 +28,13 @@
     // width: u32,
 // }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Label {
     pub column_id : String,
     pub name : String, 
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Group {
     // pub archived: bool,
     // pub color: String,
@@ -52,7 +54,7 @@ impl Group {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Item {
     // assets: Vec<Asset>,
     pub board: Board,
@@ -85,7 +87,7 @@ impl Item {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ColumnValue {
     pub additional_info: String,
     pub id: String,
@@ -94,7 +96,7 @@ pub struct ColumnValue {
     pub type_: String, // value: JSON,
 }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Date {
 //     pub dt: String,
 // }
@@ -105,10 +107,10 @@ pub struct ColumnValue {
 //     }
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // pub struct JSON {}
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Asset {
 //     created_at: Date,
 //     file_extension: String,
@@ -122,13 +124,13 @@ pub struct ColumnValue {
 //     url_thumbnail: String,
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // enum FirstDayOfTheWeek {
 //     Sunday,
 //     Monday,
 // }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Account {
 //     // first_day_of_the_week: FirstDayOfTheWeek,
 //     id: u32,
@@ -140,7 +142,7 @@ pub struct ColumnValue {
 //     tier: String,
 // }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Plan {
 //     max_users: u32,
 //     period: String,
@@ -148,7 +150,7 @@ pub struct ColumnValue {
 //     version: u32,
 // }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     // account: Account,
     // birthday: Date,
@@ -189,7 +191,7 @@ impl User {
     }
 }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Team {
 //     id: u32,
 //     name: String,
@@ -197,7 +199,7 @@ impl User {
 //     users: Vec<User>,
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // enum State {
 //     All,
 //     Active,
@@ -206,17 +208,17 @@ impl User {
 //     None,
 // }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Tag {
 //     color: String,
 //     id: u32,
 //     name: String,
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // pub struct ISO8601DateTime {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Update {
     // assets: Vec<Asset>,
     // body: String,
@@ -230,7 +232,7 @@ pub struct Update {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Reply {
     // body: String,
     // created_at: Date,
@@ -241,14 +243,14 @@ pub struct Reply {
     pub updated_at: String,
 }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct BoardView {
 //     id: String,
 //     name: String,
 //     settings_str: String,
 // }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Clone)]
 // pub struct Workspace {
 //     description: String,
 //     id: u32,
@@ -256,13 +258,13 @@ pub struct Reply {
 //     name: String,
 // }
 
-// #[derive(Debug, Copy, Clone)]
+// #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 // enum WorkspaceKind {
 //     Open,
 //     Closed,
 // }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Board {
     // activity_logs : Vec<ActivityLogType>
     // board_folder_id : u32,

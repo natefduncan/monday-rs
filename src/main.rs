@@ -48,6 +48,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             events::Event::Input(event) => {
                 //Quit
                 if event.code == KeyCode::Esc {
+                    //Save app state
+                    app.cache.app_state = app::AppState::from(app.clone()); 
+                    cache::write(&app.cache).expect("could not save cache");
+                    //Stop terminal
                     app::stop_terminal(&mut terminal);
                     break;
                 }
