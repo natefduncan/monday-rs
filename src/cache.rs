@@ -8,6 +8,7 @@ use std::fs::OpenOptions;
 pub struct BoardMeta {
     pub id: String,
     pub status_column_id: String,
+    pub user_column_id: String,
 }
 
 impl BoardMeta {
@@ -15,6 +16,7 @@ impl BoardMeta {
         BoardMeta {
             id: String::from(""),
             status_column_id: String::from(""),
+            user_column_id : String::from("")
         }
     }
 }
@@ -47,6 +49,14 @@ impl Cache {
 
     pub fn board_has_meta(&self, board_id : String) -> bool {
         self.boards.iter().filter(|board| board.id == board_id).cloned().collect::<Vec<BoardMeta>>().len() > 0
+    }
+
+    pub fn get_board_meta(&self, board_id : String) -> BoardMeta { 
+        let board_meta = self.boards.iter().filter(|board| board.id == board_id).cloned().collect::<Vec<BoardMeta>>(); 
+        board_meta
+        .into_iter()
+        .nth(0)
+        .unwrap_or(BoardMeta::new())
     }
 }
 
