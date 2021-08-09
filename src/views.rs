@@ -394,9 +394,10 @@ pub struct ItemList;
 impl ItemList {
     pub fn render(rect: &mut Frame<CrosstermBackend<io::Stdout>>, app: &mut app::App) {
         //Default chunks, search, and menu
-        let chunks = components::get_default_chunks(&rect);
+        let chunks = components::get_help_chunks(&rect);
         let search_block = components::get_search_block(&app);
         let menu_block = components::get_menu_block(&app);
+        let help_block = components::get_help_block(&app); 
 
         //Filter items
         let filtered = utils::filter_items(app);
@@ -421,8 +422,9 @@ impl ItemList {
 
         //Render components
         rect.render_widget(menu_block, chunks[0]);
-        rect.render_stateful_widget(item_list, chunks[1], &mut app.list_state.clone());
-        rect.render_widget(search_block, chunks[2]);
+        rect.render_widget(help_block, chunks[1]); 
+        rect.render_stateful_widget(item_list, chunks[2], &mut app.list_state.clone());
+        rect.render_widget(search_block, chunks[3]);
     }
 
     pub fn keyup(self, app: &mut app::App) {
