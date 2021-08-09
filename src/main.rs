@@ -13,7 +13,7 @@ pub mod views;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _matches = App::new("Monday TUI")
-                          .version("0.1.0")
+                          .version("0.1.1")
                           .author("Nate D.")
                           .about("Monday Terminal User Interface for very basic interaction with Monday.com project management software.")
                           .get_matches();
