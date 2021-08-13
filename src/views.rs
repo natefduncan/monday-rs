@@ -92,10 +92,12 @@ impl Home {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Boards;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::ItemDetail;
+        app.key_input = vec![]; 
     }
 
     pub fn process_input_event(&self, event: KeyEvent, app: &mut app::App) {
@@ -214,10 +216,12 @@ impl BoardList {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Groups;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -306,10 +310,12 @@ impl GroupList {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Items;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Boards;
+        app.key_input = vec![]; 
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -355,10 +361,12 @@ impl GroupListForMove {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
-        app.active_menu_item = MenuItem::ItemDetail;
+        app.active_menu_item = MenuItem::ItemDetail; 
+        app.key_input = vec![]; 
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -451,10 +459,12 @@ impl ItemList {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::ItemDetail;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Groups;
+        app.key_input = vec![]; 
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -604,10 +614,12 @@ impl ItemDetail {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Items;
+        app.key_input = vec![]; 
     }
 
     pub fn keyenter(self, app: &mut app::App) {
@@ -647,10 +659,12 @@ impl ItemOptions {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Items;
+        app.key_input = vec![]; 
     }
 
     pub fn keyup(self, app: &mut app::App) {
@@ -810,10 +824,12 @@ impl UserColumnOptions {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Items;
+        app.key_input = vec![]; 
     }
 
     pub fn keyup(self, app: &mut app::App) {
@@ -888,10 +904,12 @@ impl StatusColumnOptions {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Items;
+        app.key_input = vec![]; 
     }
 
     pub fn keyup(self, app: &mut app::App) {
@@ -961,10 +979,12 @@ impl UserOptions {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::ItemOptions;
+        app.key_input = vec![]; 
     }
 
     pub fn keyup(self, app: &mut app::App) {
@@ -1025,10 +1045,12 @@ impl StatusOptions {
 
     pub fn keyright(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::Home;
+        app.key_input = vec![]; 
     }
 
     pub fn keyleft(self, app: &mut app::App) {
         app.active_menu_item = MenuItem::ItemOptions;
+        app.key_input = vec![]; 
     }
 
     pub fn keyup(self, app: &mut app::App) {
