@@ -19,7 +19,11 @@ use serde_json::{
 struct BoardList;
 
 pub fn board_list(client: &Client) -> Vec<Board> {
-    let variables = board_list::Variables { limit: Some(50) };
+    let variables = board_list::Variables { 
+        limit: Some(100), 
+        newest_first : Some(false),
+        page : Some(1)
+    };
     let res: Response<board_list::ResponseData> =
         monday::query::<BoardList>(&client, variables).expect("Could not execute query.");
     let boards = parse_board_list_response(res);
